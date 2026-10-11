@@ -1,0 +1,15 @@
+.git
+.venv
+__pycache__
+.pytest_cache
+.ruff_cache
+data/raw
+data/bronze
+data/silver
+data/gold
+data/samples
+data/tmp
+mlruns
+logs
+*.pyc
+.DS_Store

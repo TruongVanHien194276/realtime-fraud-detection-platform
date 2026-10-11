@@ -1,0 +1,33 @@
+.DS_Store
+.env
+.venv/
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+*.py[cod]
+*.log
+
+# Datasets and generated lakehouse tables
+data/raw/*
+data/bronze/*
+data/silver/*
+data/gold/*
+!data/raw/.gitkeep
+!data/bronze/.gitkeep
+!data/silver/.gitkeep
+!data/gold/.gitkeep
+!data/samples/.gitkeep
+
+# Runtime state
+checkpoints/
+artifacts/
+mlruns/
+logs/
+tmp/
+
+# BI and local secrets
+*.pbix
+*.pbit
+*.duckdb
+*.db
+*.sqlite

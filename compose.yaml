@@ -1,0 +1,15 @@
+services:
+  dev:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    platform: linux/arm64
+    working_dir: /workspace
+    volumes:
+      - .:/workspace
+    environment:
+      PYTHONPATH: /workspace/src
+    mem_limit: 1g
+    cpus: 2
+    stdin_open: true
+    tty: true
