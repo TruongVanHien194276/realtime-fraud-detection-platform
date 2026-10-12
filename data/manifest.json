@@ -1,0 +1,137 @@
+{
+  "manifest_version": "1.0",
+  "generated_at_utc": "2026-10-12T05:22:33.394906+00:00",
+  "source": {
+    "file_name": "PS_20174392719_1491204439457_log.csv",
+    "file_size_bytes": 493534783,
+    "sha256": "16910f90577b0d981bf8ff289714510bb89bc71bff7d3f220f024e287e4eea6b",
+    "downloaded_at_utc": null,
+    "download_date_status": "not_recorded",
+    "source_url": "https://www.kaggle.com/datasets/ealaxi/paysim1"
+  },
+  "schema": [
+    {
+      "name": "step",
+      "duckdb_type": "BIGINT",
+      "nullable": true
+    },
+    {
+      "name": "type",
+      "duckdb_type": "VARCHAR",
+      "nullable": true
+    },
+    {
+      "name": "amount",
+      "duckdb_type": "DOUBLE",
+      "nullable": true
+    },
+    {
+      "name": "nameOrig",
+      "duckdb_type": "VARCHAR",
+      "nullable": true
+    },
+    {
+      "name": "oldbalanceOrg",
+      "duckdb_type": "DOUBLE",
+      "nullable": true
+    },
+    {
+      "name": "newbalanceOrig",
+      "duckdb_type": "DOUBLE",
+      "nullable": true
+    },
+    {
+      "name": "nameDest",
+      "duckdb_type": "VARCHAR",
+      "nullable": true
+    },
+    {
+      "name": "oldbalanceDest",
+      "duckdb_type": "DOUBLE",
+      "nullable": true
+    },
+    {
+      "name": "newbalanceDest",
+      "duckdb_type": "DOUBLE",
+      "nullable": true
+    },
+    {
+      "name": "isFraud",
+      "duckdb_type": "BIGINT",
+      "nullable": true
+    },
+    {
+      "name": "isFlaggedFraud",
+      "duckdb_type": "BIGINT",
+      "nullable": true
+    }
+  ],
+  "summary": {
+    "row_count": 6362620,
+    "fraud_count": 8213,
+    "flagged_fraud_count": 16,
+    "min_step": 1,
+    "max_step": 743,
+    "min_amount": 0.0,
+    "avg_amount": 179861.9035491271,
+    "max_amount": 92445516.64,
+    "duplicate_row_count": 0,
+    "fraud_rate": 0.001290820448180152
+  },
+  "null_counts": {
+    "step": 0,
+    "type": 0,
+    "amount": 0,
+    "nameOrig": 0,
+    "oldbalanceOrg": 0,
+    "newbalanceOrig": 0,
+    "nameDest": 0,
+    "oldbalanceDest": 0,
+    "newbalanceDest": 0,
+    "isFraud": 0,
+    "isFlaggedFraud": 0
+  },
+  "quality": {
+    "negative_amount_count": 0,
+    "negative_step_count": 0,
+    "invalid_fraud_label_count": 0,
+    "invalid_flag_count": 0,
+    "invalid_type_count": 0,
+    "approx_origin_cardinality": 6457872,
+    "approx_destination_cardinality": 2723511,
+    "approx_median_amount": 74608.30928351104,
+    "approx_p95_amount": 522577.5113285489
+  },
+  "transaction_types": [
+    {
+      "transaction_type": "CASH_OUT",
+      "transaction_count": 2237500,
+      "fraud_count": 4116,
+      "average_amount": 176273.9643461379
+    },
+    {
+      "transaction_type": "PAYMENT",
+      "transaction_count": 2151495,
+      "fraud_count": 0,
+      "average_amount": 13057.604660187491
+    },
+    {
+      "transaction_type": "CASH_IN",
+      "transaction_count": 1399284,
+      "fraud_count": 0,
+      "average_amount": 168920.24200409418
+    },
+    {
+      "transaction_type": "TRANSFER",
+      "transaction_count": 532909,
+      "fraud_count": 4097,
+      "average_amount": 910647.0096454972
+    },
+    {
+      "transaction_type": "DEBIT",
+      "transaction_count": 41432,
+      "fraud_count": 0,
+      "average_amount": 5483.665313767156
+    }
+  ]
+}

@@ -8,22 +8,22 @@ version = "0.1.0"
 description = "Near-real-time fraud detection data platform"
 requires-python = ">=3.12,<3.13"
 dependencies = [
-    "duckdb>=1.4,<2",
-    "pyarrow>=18,<24",
-    "pydantic>=2.10,<3",
+    "duckdb==1.5.6",
+    "pyarrow==23.0.1",
+    "pydantic==2.14.1",
 ]
 
 [project.optional-dependencies]
 dev = [
-    "pytest>=8,<10",
-    "ruff>=0.11,<1",
+    "pytest==9.1.1",
+    "ruff==0.17.0",
 ]
 
 [tool.setuptools.packages.find]
 where = ["src"]
 
 [tool.pytest.ini_options]
-pythonpath = ["src"]
+pythonpath = [".", "src"]
 testpaths = ["tests"]
 addopts = "-q"
 

@@ -1,0 +1,40 @@
+{
+  "sample_manifest_version": "1.0",
+  "seed": 42,
+  "source_file": "PS_20174392719_1491204439457_log.csv",
+  "files": [
+    {
+      "file_name": "representative_10k.parquet",
+      "row_count": 10000,
+      "fraud_count": 16,
+      "fraud_rate": 0.0016,
+      "file_size_bytes": 330028,
+      "sha256": "be20fddb6f38bf2a1ea9f36300608adca5f4358a037b6115445a64e126509f48"
+    },
+    {
+      "file_name": "representative_100k.parquet",
+      "row_count": 100000,
+      "fraud_count": 137,
+      "fraud_rate": 0.00137,
+      "file_size_bytes": 3178135,
+      "sha256": "cc22d06487a0b2313d5c89b03e115c0822918a8eb72d251fd030b0a6b5a058c3"
+    },
+    {
+      "file_name": "representative_1m.parquet",
+      "row_count": 1000000,
+      "fraud_count": 1336,
+      "fraud_rate": 0.001336,
+      "file_size_bytes": 31772137,
+      "sha256": "a64eaecef34800562cac9d7d7d180106558a8b1deec170600683186ce5d04463"
+    },
+    {
+      "file_name": "fraud_scenario_10k.parquet",
+      "row_count": 10000,
+      "fraud_count": 1000,
+      "fraud_rate": 0.1,
+      "file_size_bytes": 330499,
+      "sha256": "28e4210494f93ef1ede5142fcfe19d969cd3959ec2dfd55ec1d031e8ed548bad"
+    }
+  ],
+  "warning": "fraud_scenario_10k is for pipeline demonstrations only. Do not use it to report model performance."
+}

@@ -9,6 +9,8 @@ __pycache__/
 
 # Datasets and generated lakehouse tables
 data/raw/*
+data/samples/*
+data/tmp/
 data/bronze/*
 data/silver/*
 data/gold/*
@@ -17,6 +19,7 @@ data/gold/*
 !data/silver/.gitkeep
 !data/gold/.gitkeep
 !data/samples/.gitkeep
+!data/samples/sample_manifest.json
 
 # Runtime state
 checkpoints/

@@ -18,6 +18,7 @@ Kiến trúc dự án được điều chỉnh cho MacBook Pro Apple M3 có 8 GB
 ## Ràng buộc triển khai
 
 - Runtime Spark/Airflow chạy trong container thay vì dùng Python và Java trên host.
+- Tuần 1 pin DuckDB 1.5.6, PyArrow 23.0.1, Pydantic 2.14.1, pytest 9.1.1 và Ruff 0.17.0 trong `pyproject.toml`; các bản này đã build trên ARM64 container.
 - Ưu tiên image có hỗ trợ `linux/arm64`; tránh ép `amd64` vì emulation tốn CPU và RAM.
 - Spark chạy local mode với 2 cores trong developer loop.
 - Chỉ bật các Docker Compose profiles đang cần.
