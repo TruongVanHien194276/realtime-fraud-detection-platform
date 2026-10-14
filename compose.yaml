@@ -167,6 +167,22 @@ services:
     mem_limit: 768m
     cpus: 2
 
+  ml:
+    build:
+      context: .
+      dockerfile: Dockerfile.ml
+    platform: linux/arm64
+    profiles: ["ml"]
+    working_dir: /workspace
+    volumes:
+      - .:/workspace
+    environment:
+      PYTHONPATH: /workspace/src
+      OMP_NUM_THREADS: "2"
+      OPENBLAS_NUM_THREADS: "2"
+      MKL_NUM_THREADS: "2"
+    mem_limit: 2g
+    cpus: 2
 volumes:
   fraud_pgdata:
   fraud_redpanda:

@@ -39,6 +39,12 @@ Tuần 1 đã có raw manifest, samples, data contracts và profile. Tuần 2 c�
 
 Tuần 6 đang có exporter snapshot curated, DAX specification và Streamlit validation page. Power BI Cloud semantic model, report và PDF export vẫn cần kết nối tài khoản/workspace; không coi local preview là report cloud. Xem [kế hoạch Power BI Cloud](docs/power-bi-cloud-plan.md) và [KPI catalog](docs/kpi-catalog.md).
 
+Tuần 7 có ML baseline theo temporal split trên mẫu PaySim 1m, MLflow tracking,
+đối chiếu rule subset cùng alert capacity và holdout 100k dòng không trùng mẫu.
+Kết quả, leakage checklist và giới hạn của dữ liệu giả lập nằm trong
+[báo cáo Tuần 7](docs/week7-ml.md). Model dùng số dư cho điểm gần tuyệt đối
+do quy luật PaySim nên không được chọn làm candidate cho Tuần 8.
+
 ## Chạy lại Tuần 1
 
 Đặt PaySim CSV vào `data/raw/` theo [hướng dẫn dữ liệu](docs/dataset-guide.md), rồi chạy:
