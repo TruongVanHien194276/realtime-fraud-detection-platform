@@ -73,3 +73,21 @@ class FraudDecisionEvent(BaseModel):
     rule_version: str
     feature_version: str
     processing_latency_ms: int = Field(ge=0)
+
+    # Metadata của lần tính rules, không phải thuộc tính của transaction đầu vào.
+    run_id: str | None = Field(default=None, min_length=1)
+    source_event_time: datetime | None = None
+    feature_as_of_event_time: datetime | None = None
+    feature_computed_at: datetime | None = None
+    reason_codes: list[str] = Field(default_factory=list)
+
+
+class FraudLabelEvent(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    schema_version: Literal["1.0"] = "1.0"
+    run_id: str = Field(min_length=1)
+    transaction_id: str = Field(min_length=1)
+    label: Literal[0, 1]
+    label_observed_at: datetime
+    label_source: str = Field(min_length=1)

@@ -112,6 +112,41 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     mem_limit: 768m
     cpus: 2
+  redis:
+    image: redis:7.4-alpine
+    platform: linux/arm64
+    profiles: ["rules"]
+    command:
+      - redis-server
+      - --appendonly
+      - "no"
+      - --maxmemory
+      - 96mb
+      - --maxmemory-policy
+      - allkeys-lru
+    mem_limit: 128m
+    cpus: 1
+
+  rules:
+    build:
+      context: .
+      dockerfile: Dockerfile.rules
+    platform: linux/arm64
+    profiles: ["rules"]
+    working_dir: /workspace
+    volumes:
+      - .:/workspace
+    environment:
+      PYTHONPATH: /workspace/src
+      PGHOST: postgres
+      PGPORT: "5432"
+      PGUSER: fraud
+      PGPASSWORD: ${POSTGRES_PASSWORD}
+      PGDATABASE: fraud_dw
+      REDIS_URL: redis://redis:6379/0
+      KAFKA_BOOTSTRAP: redpanda:9092
+    mem_limit: 384m
+    cpus: 1
 
 volumes:
   fraud_pgdata:

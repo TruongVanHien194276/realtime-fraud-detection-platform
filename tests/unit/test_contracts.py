@@ -8,6 +8,7 @@ from pydantic import ValidationError
 from fraud_platform.contracts import (
     FraudDecision,
     FraudDecisionEvent,
+    FraudLabelEvent,
     TransactionEvent,
     TransactionType,
 )
@@ -86,4 +87,15 @@ def test_risk_score_above_one_is_rejected() -> None:
             rule_version="rules-v1",
             feature_version="features-v1",
             processing_latency_ms=100,
+        )
+
+
+def test_label_event_rejects_values_other_than_zero_or_one() -> None:
+    with pytest.raises(ValidationError):
+        FraudLabelEvent(
+            run_id="week5-smoke-v1",
+            transaction_id="txn-000001",
+            label=2,
+            label_observed_at=datetime.now(UTC),
+            label_source="paysim_simulated_chargeback",
         )

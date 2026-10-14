@@ -1,0 +1,58 @@
+rule_version: rules-v1
+feature_version: features-v1
+
+policy:
+  review_at: "0.30"
+  block_at: "0.75"
+
+rules:
+  - id: R001
+    version: 1
+    severity: hard
+    reason_code: LARGE_TRANSFER_NEAR_FULL_BALANCE
+    weight: "1.00"
+    all:
+      - {field: transaction_type, op: eq, value: TRANSFER}
+      - {field: amount, op: gte, value: "200000"}
+      - {field: amount_to_balance_ratio, op: gte, value: "0.90"}
+
+  - id: R002
+    version: 1
+    severity: soft
+    reason_code: HIGH_CUSTOMER_VELOCITY_5M
+    weight: "0.40"
+    all:
+      - {field: customer_count_5m, op: gte, value: 3}
+
+  - id: R003
+    version: 1
+    severity: soft
+    reason_code: AMOUNT_ABOVE_CUSTOMER_AVERAGE
+    weight: "0.35"
+    all:
+      - {field: amount_over_avg_24h, op: gte, value: "5"}
+
+  - id: R004
+    version: 1
+    severity: soft
+    reason_code: NEW_RECIPIENT_HIGH_AMOUNT
+    weight: "0.35"
+    all:
+      - {field: new_recipient_24h, op: eq, value: true}
+      - {field: amount, op: gte, value: "10000"}
+
+  - id: R005
+    version: 1
+    severity: soft
+    reason_code: RECIPIENT_FAN_IN_SPIKE
+    weight: "0.40"
+    all:
+      - {field: recipient_fan_in_1h, op: gte, value: 5}
+
+  - id: R006
+    version: 1
+    severity: soft
+    reason_code: CUSTOMER_FAN_OUT_SPIKE
+    weight: "0.30"
+    all:
+      - {field: customer_fan_out_1h, op: gte, value: 4}

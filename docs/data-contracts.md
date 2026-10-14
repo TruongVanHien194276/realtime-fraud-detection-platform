@@ -37,13 +37,13 @@ Partition key của `transactions.raw` là `customer_id` để giữ thứ tự 
 
 ## `fraud.decisions` event
 
-Contract code là `FraudDecisionEvent`. Mỗi decision có `event_id`, `transaction_id`, `decided_at`, `decision`, `risk_score` từ 0 đến 1, `triggered_rules`, `rule_version`, `feature_version`, `model_version` (nullable) và `processing_latency_ms` không âm.
+Contract code là `FraudDecisionEvent`. Mỗi decision có `event_id`, `transaction_id`, `decided_at`, `decision`, `risk_score` từ 0 đến 1, `triggered_rules`, `rule_version`, `feature_version`, `model_version` (nullable) và `processing_latency_ms` không âm. Tuần 5 thêm metadata tương thích: `run_id`, `source_event_time`, `feature_as_of_event_time`, `feature_computed_at` và `reason_codes`; worker điền đủ các trường này.
 
 Một transaction chỉ có một quyết định hiệu lực cho mỗi policy version. Nếu cần rescoring, lưu một decision event mới có version và quan hệ supersedes, không âm thầm ghi đè audit trail.
 
 ## `fraud.labels` event
 
-Nhãn đến trễ qua topic riêng và gồm `transaction_id`, `label`, `label_observed_at`, `label_source`, `schema_version`. Đây là contract dự kiến cho Tuần 5; chưa có Pydantic model ở Tuần 1. `label` là 0/1; `label_source` có thể là analyst confirmation hoặc simulated chargeback. Consumer training chỉ lấy nhãn đã quan sát trước thời điểm snapshot.
+Nhãn đến trễ qua topic riêng và theo `FraudLabelEvent` gồm `run_id`, `transaction_id`, `label`, `label_observed_at`, `label_source`, `schema_version`. `label` là 0/1; `label_source` của Tuần 5 là `paysim_simulated_chargeback`. Consumer training chỉ lấy nhãn đã quan sát trước thời điểm snapshot.
 
 ## Quy tắc versioning
 

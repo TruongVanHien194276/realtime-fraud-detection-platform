@@ -35,7 +35,7 @@ tests/         Unit, integration và data-quality tests
 
 ## Trạng thái
 
-Tuần 1 đã có raw manifest, samples, data contracts và profile. Tuần 2 có batch Bronze/Silver bằng Spark + Iceberg local; xem [thiết kế lakehouse](docs/lakehouse-design.md). Tuần 3 có PostgreSQL warehouse và dbt star schema trên mẫu 100k; xem [thiết kế warehouse và kết quả kiểm thử](docs/warehouse-model.md). Tuần 4 có Redpanda replay, Spark Structured Streaming, deduplication, watermark và DLQ; xem [ngữ nghĩa streaming và kết quả kiểm thử](docs/streaming-semantics.md). Raw CSV, Parquet samples, Iceberg warehouse, checkpoint và dbt artifacts không được commit vào Git.
+Tuần 1 đã có raw manifest, samples, data contracts và profile. Tuần 2 có batch Bronze/Silver bằng Spark + Iceberg local; xem [thiết kế lakehouse](docs/lakehouse-design.md). Tuần 3 có PostgreSQL warehouse và dbt star schema trên mẫu 100k; xem [thiết kế warehouse và kết quả kiểm thử](docs/warehouse-model.md). Tuần 4 có Redpanda replay, Spark Structured Streaming, deduplication, watermark và DLQ; xem [ngữ nghĩa streaming và kết quả kiểm thử](docs/streaming-semantics.md). Tuần 5 có point-in-time features, Redis hot state, rules engine, delayed labels và [rule-only baseline](docs/week5-rules.md). Raw CSV, Parquet samples, Iceberg warehouse, checkpoint và dbt artifacts không được commit vào Git.
 
 ## Chạy lại Tuần 1
 
