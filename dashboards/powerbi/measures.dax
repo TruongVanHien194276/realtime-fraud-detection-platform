@@ -1,0 +1,15 @@
+// Create these measures in the Power BI web semantic model.
+// Source: docs/kpi-catalog.md. Set percentages to 0.00% format.
+Gold Transactions = SUM(fact_fraud_daily[transaction_count])
+Transaction Value = SUM(fact_fraud_daily[transaction_value])
+Scored Decisions = SUM(fact_alert_performance[decision_count])
+Alerts = SUM(fact_alert_performance[review_count]) + SUM(fact_alert_performance[block_count])
+Approval Rate = DIVIDE(SUM(fact_alert_performance[approve_count]), [Scored Decisions])
+Review Rate = DIVIDE(SUM(fact_alert_performance[review_count]), [Scored Decisions])
+Block Rate = DIVIDE(SUM(fact_alert_performance[block_count]), [Scored Decisions])
+Alert Precision = DIVIDE(SUM(fact_alert_performance[tp]), SUM(fact_alert_performance[tp]) + SUM(fact_alert_performance[fp]))
+Alert Recall = DIVIDE(SUM(fact_alert_performance[tp]), SUM(fact_alert_performance[tp]) + SUM(fact_alert_performance[fn]))
+False Positive Rate = DIVIDE(SUM(fact_alert_performance[fp]), SUM(fact_alert_performance[fp]) + SUM(fact_alert_performance[tn]))
+Suspected Fraud Amount Proxy = SUM(fact_alert_performance[alert_amount_proxy])
+Captured Fraud Amount Proxy = SUM(fact_alert_performance[captured_fraud_amount_proxy])
+Balance Mismatches = SUM(fact_fraud_daily[balance_mismatch_count])

@@ -36,6 +36,7 @@ tmp/
 *.sqlite
 
 data/lakehouse/
+data/exports/
 
 # Generated dbt state; models and tests under dbt/ remain versioned.
 dbt/target/

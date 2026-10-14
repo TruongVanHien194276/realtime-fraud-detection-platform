@@ -14,6 +14,7 @@ logs
 *.pyc
 .DS_Store
 data/lakehouse/
+data/exports/
 dbt/target
 dbt/logs
 dbt/dbt_packages

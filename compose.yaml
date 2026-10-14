@@ -148,6 +148,25 @@ services:
     mem_limit: 384m
     cpus: 1
 
+  bi:
+    build:
+      context: .
+      dockerfile: Dockerfile.bi
+    platform: linux/arm64
+    profiles: ["bi"]
+    working_dir: /workspace
+    volumes:
+      - .:/workspace
+    environment:
+      PGHOST: postgres
+      PGPORT: "5432"
+      PGUSER: fraud
+      PGPASSWORD: ${POSTGRES_PASSWORD}
+      PGDATABASE: fraud_dw
+      PYTHONPATH: /workspace/src
+    mem_limit: 768m
+    cpus: 2
+
 volumes:
   fraud_pgdata:
   fraud_redpanda:

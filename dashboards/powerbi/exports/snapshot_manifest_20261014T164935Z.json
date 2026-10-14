@@ -1,0 +1,129 @@
+{
+  "snapshot_id": "20261014T164935Z-week5-smoke-v1",
+  "exported_at": "2026-10-14T16:49:35.479010+00:00",
+  "run_id": "week5-smoke-v1",
+  "semantic_note": "Historical PaySim replay, not live production traffic",
+  "tables": {
+    "fact_fraud_daily": {
+      "rows": 151,
+      "columns": [
+        "event_date",
+        "transaction_type",
+        "transaction_count",
+        "transaction_value",
+        "actual_fraud_count",
+        "actual_fraud_amount",
+        "balance_mismatch_count"
+      ],
+      "sha256": "3e9b50413e01081d14d84dc81449a5ee81eb77bd6c31241d294d9af815dc1a8f",
+      "parquet": "fact_fraud_daily.parquet",
+      "json": "fact_fraud_daily.json"
+    },
+    "fact_fraud_decisions": {
+      "rows": 999,
+      "columns": [
+        "transaction_id",
+        "source_event_time",
+        "decided_at",
+        "decision",
+        "risk_score",
+        "amount",
+        "processing_latency_ms",
+        "rule_version",
+        "reason_codes",
+        "label",
+        "label_observed_at",
+        "transaction_type",
+        "event_date",
+        "customer_key",
+        "confusion_class",
+        "alert_flag",
+        "labeled_flag",
+        "actual_fraud_alert_amount"
+      ],
+      "sha256": "1ea6140ad841ba4b6f88abdacdecdbffbc1e48ccfa41b118ee6caed9a172b49c",
+      "parquet": "fact_fraud_decisions.parquet",
+      "json": "fact_fraud_decisions.json"
+    },
+    "fact_alert_performance": {
+      "rows": 5,
+      "columns": [
+        "event_date",
+        "transaction_type",
+        "decision_count",
+        "approve_count",
+        "review_count",
+        "block_count",
+        "labeled_count",
+        "tp",
+        "fp",
+        "fn",
+        "tn",
+        "alert_amount_proxy",
+        "captured_fraud_amount_proxy"
+      ],
+      "sha256": "3af02c6048aba173f0a39326d6751e0b696732354451219725ad33880b3b0881",
+      "parquet": "fact_alert_performance.parquet",
+      "json": "fact_alert_performance.json"
+    },
+    "fact_customer_timeline": {
+      "rows": 999,
+      "columns": [
+        "transaction_id",
+        "event_time",
+        "event_date",
+        "transaction_type",
+        "amount",
+        "is_fraud_actual",
+        "customer_key"
+      ],
+      "sha256": "180a48d1a809f407c83a39c9deae5f31833dd50d83493db480b2216a5741826b",
+      "parquet": "fact_customer_timeline.parquet",
+      "json": "fact_customer_timeline.json"
+    },
+    "fact_pipeline_health": {
+      "rows": 1,
+      "columns": [
+        "run_id",
+        "snapshot_at",
+        "gold_max_event_at",
+        "scored_max_event_at",
+        "decision_count",
+        "labeled_count",
+        "latency_p50_ms",
+        "latency_p95_ms",
+        "freshness_kind"
+      ],
+      "sha256": "cf7240363380b3e31d8810be7bd20a4a927dbe834c3304381bcb97951577502a",
+      "parquet": "fact_pipeline_health.parquet",
+      "json": "fact_pipeline_health.json"
+    },
+    "dim_date": {
+      "rows": 31,
+      "columns": [
+        "event_date"
+      ],
+      "sha256": "1c70a2a4044ed3ac5696344678bc7e3951567c164cb47665971a6651972a5ab1",
+      "parquet": "dim_date.parquet",
+      "json": "dim_date.json"
+    },
+    "dim_transaction_type": {
+      "rows": 5,
+      "columns": [
+        "transaction_type"
+      ],
+      "sha256": "e4a614b3bec06e559396bdae1b11ed8372f87c71d5ae0484d7474401692e3744",
+      "parquet": "dim_transaction_type.parquet",
+      "json": "dim_transaction_type.json"
+    },
+    "dim_rule": {
+      "rows": 2,
+      "columns": [
+        "rule_code"
+      ],
+      "sha256": "add316551e42f5126ea889dccb34b2f24fb0ad66f68df813a70ff9588125d9c1",
+      "parquet": "dim_rule.parquet",
+      "json": "dim_rule.json"
+    }
+  }
+}

@@ -5,7 +5,7 @@ DBT_FLAGS ?=
 SPARK_SUBMIT = docker compose run --rm spark spark-submit --master 'local[2]' --driver-memory 1g --jars /opt/iceberg/iceberg-spark-runtime.jar
 SPARK_SUBMIT_JDBC = docker compose run --rm spark spark-submit --master 'local[2]' --driver-memory 1g --jars /opt/iceberg/iceberg-spark-runtime.jar,/opt/jdbc/postgresql.jar
 
-.PHONY: build shell profile samples smoke-samples lint format format-check test check spark-build bronze-100k bronze-1m silver verify-lakehouse check-spark warehouse-up warehouse-export-100k warehouse-merge warehouse-indexes dbt-build dbt-docs
+.PHONY: build shell profile samples smoke-samples lint format format-check test check spark-build bronze-100k bronze-1m silver verify-lakehouse check-spark warehouse-up warehouse-export-100k warehouse-merge warehouse-indexes dbt-build dbt-docs bi-build bi-export bi-preview
 
 build:
 	docker compose build dev
@@ -73,3 +73,13 @@ dbt-build: warehouse-up
 
 dbt-docs: warehouse-up
 	docker compose --profile warehouse run --rm dbt dbt docs generate --no-partial-parse
+
+# BI uses a compact ARM64 container; do not run Spark concurrently on an 8 GB Mac.
+bi-build:
+	docker compose --profile bi build bi
+
+bi-export: warehouse-up
+	docker compose --profile bi run --rm bi python scripts/export_powerbi_snapshot.py --run-id week5-smoke-v1
+
+bi-preview:
+	docker compose --profile bi run --rm -p 127.0.0.1:8501:8501 bi streamlit run dashboards/bi_validation.py --server.address 0.0.0.0 --server.port 8501
