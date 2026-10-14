@@ -1,0 +1,13 @@
+version: 2
+
+sources:
+  - name: silver_export
+    description: "Bản sao insert-only từ Iceberg Silver sang PostgreSQL, có transaction_id ổn định."
+    schema: warehouse_raw
+    tables:
+      - name: transactions_silver
+        columns:
+          - name: transaction_id
+            data_tests:
+              - unique
+              - not_null

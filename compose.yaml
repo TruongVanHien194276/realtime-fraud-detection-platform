@@ -13,3 +13,106 @@ services:
     cpus: 2
     stdin_open: true
     tty: true
+
+  spark:
+    build:
+      context: .
+      dockerfile: Dockerfile.spark
+    platform: linux/arm64
+    working_dir: /workspace
+    volumes:
+      - .:/workspace
+    environment:
+      PYTHONPATH: /workspace
+      SPARK_LOCAL_IP: 127.0.0.1
+      SPARK_LOCAL_DIRS: /workspace/data/tmp/spark
+      # Dùng khi chạy pytest trực tiếp bằng Python.
+      PYSPARK_SUBMIT_ARGS: "--jars /opt/iceberg/iceberg-spark-runtime.jar pyspark-shell"
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    mem_limit: 2700m
+    cpus: 2
+    stdin_open: true
+    tty: true
+
+  postgres:
+    image: postgres:16-alpine
+    platform: linux/arm64
+    profiles: ["warehouse"]
+    environment:
+      POSTGRES_DB: fraud_dw
+      POSTGRES_USER: fraud
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    command:
+      - postgres
+      - -c
+      - shared_buffers=64MB
+      - -c
+      - work_mem=4MB
+      - -c
+      - max_connections=20
+    volumes:
+      - fraud_pgdata:/var/lib/postgresql/data
+      - ./sql/warehouse/001_init.sql:/docker-entrypoint-initdb.d/001_init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U fraud -d fraud_dw"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+    mem_limit: 384m
+    cpus: 1
+  redpanda:
+    image: docker.redpanda.com/redpandadata/redpanda:v26.2.4
+    platform: linux/arm64
+    profiles: ["streaming"]
+    command:
+      - redpanda
+      - start
+      - --mode
+      - dev-container
+      - --smp
+      - "1"
+      - --kafka-addr
+      - internal://0.0.0.0:9092
+      - --advertise-kafka-addr
+      - internal://redpanda:9092
+      - --rpc-addr
+      - redpanda:33145
+      - --advertise-rpc-addr
+      - redpanda:33145
+    volumes:
+      - fraud_redpanda:/var/lib/redpanda/data
+    mem_limit: 768m
+    cpus: 1
+
+  producer:
+    build:
+      context: .
+      dockerfile: Dockerfile.producer
+    platform: linux/arm64
+    profiles: ["streaming"]
+    working_dir: /workspace
+    volumes:
+      - .:/workspace
+    environment:
+      PYTHONPATH: /workspace/src
+    mem_limit: 256m
+    cpus: 1
+
+  dbt:
+    build:
+      context: .
+      dockerfile: Dockerfile.dbt
+    platform: linux/arm64
+    profiles: ["warehouse"]
+    working_dir: /workspace/dbt
+    volumes:
+      - .:/workspace
+    environment:
+      DBT_PROFILES_DIR: /workspace/dbt
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    mem_limit: 768m
+    cpus: 2
+
+volumes:
+  fraud_pgdata:
+  fraud_redpanda:

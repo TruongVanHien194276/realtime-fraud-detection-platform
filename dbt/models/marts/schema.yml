@@ -1,0 +1,86 @@
+version: 2
+
+models:
+  - name: stg_transactions
+    description: "Silver export được chuẩn hóa cho dbt."
+    columns:
+      - name: transaction_id
+        data_tests: [unique, not_null]
+      - name: transaction_type
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [CASH_IN, CASH_OUT, DEBIT, PAYMENT, TRANSFER]
+      - name: is_fraud_actual
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [0, 1]
+
+  - name: dim_customer
+    description: "Một dòng cho mỗi tài khoản gửi (PaySim nameOrig); dữ liệu tổng hợp offline."
+    columns:
+      - name: customer_id
+        data_tests: [unique, not_null]
+
+  - name: dim_recipient
+    description: "Một dòng cho mỗi tài khoản nhận (PaySim nameDest)."
+    columns:
+      - name: recipient_id
+        data_tests: [unique, not_null]
+
+  - name: dim_transaction_type
+    description: "Tập mã loại giao dịch PaySim được Silver chấp nhận."
+    columns:
+      - name: transaction_type
+        data_tests: [unique, not_null]
+
+  - name: dim_date
+    description: "Một dòng cho mỗi ngày UTC có giao dịch."
+    columns:
+      - name: event_date
+        data_tests: [unique, not_null]
+
+  - name: dim_time
+    description: "Một dòng cho mỗi giờ UTC trong ngày có giao dịch."
+    columns:
+      - name: event_hour
+        data_tests: [unique, not_null]
+
+  - name: fact_transactions
+    description: "Một dòng trên một transaction_id; các nhãn fraud và 24h window chỉ cho offline analytics, không dùng làm input scoring."
+    columns:
+      - name: transaction_id
+        data_tests: [unique, not_null]
+      - name: customer_id
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_customer')
+                field: customer_id
+      - name: recipient_id
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_recipient')
+                field: recipient_id
+      - name: transaction_type
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_transaction_type')
+                field: transaction_type
+      - name: event_date
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_date')
+                field: event_date
+      - name: event_hour
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_time')
+                field: event_hour

@@ -35,7 +35,7 @@ tests/         Unit, integration và data-quality tests
 
 ## Trạng thái
 
-Tuần 1 đã có raw manifest, samples, data contracts, profile và các lệnh kiểm tra. Chạy `make check` để xác minh code trước khi bắt đầu Tuần 2. Raw CSV và Parquet samples không được commit vào Git.
+Tuần 1 đã có raw manifest, samples, data contracts và profile. Tuần 2 có batch Bronze/Silver bằng Spark + Iceberg local; xem [thiết kế lakehouse](docs/lakehouse-design.md). Tuần 3 có PostgreSQL warehouse và dbt star schema trên mẫu 100k; xem [thiết kế warehouse và kết quả kiểm thử](docs/warehouse-model.md). Tuần 4 có Redpanda replay, Spark Structured Streaming, deduplication, watermark và DLQ; xem [ngữ nghĩa streaming và kết quả kiểm thử](docs/streaming-semantics.md). Raw CSV, Parquet samples, Iceberg warehouse, checkpoint và dbt artifacts không được commit vào Git.
 
 ## Chạy lại Tuần 1
 
@@ -50,3 +50,50 @@ make check
 ```
 
 Nếu file CSV có tên khác, truyền `RAW_PATH=data/raw/ten-file.csv` cho các lệnh `make profile`, `make smoke-samples` và `make samples`. Môi trường phát triển chạy trên Docker ARM64 với 2 CPU và giới hạn 1 GB RAM. Manifest ghi rõ ngày tải là `not_recorded` vì thông tin này không được lưu tại thời điểm file được đặt vào project.
+
+## Chạy lại Tuần 2
+
+Chỉ bật Spark khi cần, không chạy đồng thời các workload nặng khác trên máy 8 GB. Build một lần:
+
+```bash
+make spark-build
+```
+
+Nạp sample 100k, tạo Silver rồi đối soát:
+
+```bash
+make bronze-100k
+make silver
+make verify-lakehouse
+make check-spark
+```
+
+Bronze nhận thêm `--input-date YYYY-MM-DD` để backfill theo ngày; Silver nhận `--input-date` hoặc `--batch-id` để xử lý một phần. Cả hai có `--warehouse` để chạy trên warehouse riêng khi benchmark hoặc test; với Makefile dùng `SPARK_WAREHOUSE=data/tmp/ten-warehouse make bronze-100k`. `data/lakehouse/` là warehouse mặc định và được Git bỏ qua. `make check-spark` gồm cả integration test CSV lỗi → Iceberg quarantine → retry idempotent.
+
+## Chạy lại Tuần 3
+
+Sau khi đã có Silver 100k tại `data/tmp/week2-benchmark-100k-v1`, tạo `.env` với `POSTGRES_PASSWORD`, rồi chạy lần lượt:
+
+```bash
+make warehouse-up
+docker compose --profile warehouse build dbt
+make spark-build
+make warehouse-export-100k
+make warehouse-merge
+make dbt-build
+make dbt-docs
+```
+
+`make dbt-build` chạy 28 data tests và áp lại index sau build. Khi đổi window logic hoặc backfill ảnh hưởng lịch sử, dùng `make dbt-build DBT_FLAGS=--full-refresh`. Để xem dbt docs local, chạy `docker compose --profile warehouse run --rm -p 127.0.0.1:8081:8081 dbt dbt docs serve --host 0.0.0.0 --port 8081 --no-browser`, rồi mở `http://localhost:8081` (8080 có thể đang được Airflow dùng). Máy 8 GB nên chạy Spark và dbt theo từng job, không giữ chúng cùng lúc.
+
+## Chạy lại Tuần 4
+
+Dừng PostgreSQL/dbt trước khi chạy Spark streaming, sau đó khởi động broker và tạo topic:
+
+```bash
+docker compose --profile warehouse stop postgres
+docker compose --profile streaming up -d redpanda
+bash scripts/init_streaming_topics.sh
+```
+
+Chuẩn bị replay từ Silver 100k, rồi chạy `spark/stream_transactions.py` bằng `spark-submit` với Kafka connector Spark 3.5.7 và Iceberg JAR. Chạy producer ở terminal khác; sau khi xử lý xong 999 giao dịch, gửi ba probe `late`, `invalid`, `malformed` và kiểm tra bằng `tests/integration/check_week4_stream.py`. Lệnh đầy đủ, quy tắc checkpoint/restart, giới hạn at-least-once và số đo 100/500 EPS nằm ở [tài liệu streaming](docs/streaming-semantics.md).

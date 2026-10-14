@@ -13,3 +13,7 @@ mlruns
 logs
 *.pyc
 .DS_Store
+data/lakehouse/
+dbt/target
+dbt/logs
+dbt/dbt_packages

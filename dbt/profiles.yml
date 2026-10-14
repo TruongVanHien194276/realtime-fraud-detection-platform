@@ -1,0 +1,12 @@
+fraud_warehouse:
+  target: local
+  outputs:
+    local:
+      type: postgres
+      host: postgres
+      port: 5432
+      user: fraud
+      password: "{{ env_var('POSTGRES_PASSWORD') }}"
+      dbname: fraud_dw
+      schema: analytics
+      threads: 2

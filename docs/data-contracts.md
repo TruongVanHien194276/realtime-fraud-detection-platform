@@ -24,9 +24,9 @@ Raw profile dùng DuckDB để khám phá kiểu cột; pipeline sản xuất s�
 
 Contract code nằm trong `src/fraud_platform/contracts.py` (`TransactionEvent`). JSON dùng tên trường trong model. `schema_version = "1.0"`; không chấp nhận field lạ. Required fields: `event_id`, `transaction_id`, `event_time`, `ingested_at`, `step`, `transaction_type`, `amount`, `customer_id`, `recipient_id` và bốn giá trị balance.
 
-Quy tắc mapping dự kiến cho producer ở Tuần 4:
+Quy tắc mapping của producer Tuần 4:
 
-1. `transaction_id` dựa trên SHA-256 của file raw cộng số thứ tự dòng dữ liệu; số thứ tự phải được lưu ổn định khi replay.
+1. `transaction_id` của PaySim batch là SHA-256 của `source_dataset_sha256` và `record_hash`. `record_hash` là SHA-256 của JSON canonical gồm 11 trường raw đã cast về schema thống nhất và `_corrupt_record`; không chứa đường dẫn file, `batch_id` hoặc thời điểm ingest. `spark/prepare_replay.py` đọc ID đã tính ở Silver Tuần 2 rồi mới bỏ label khỏi event, thay vì tính lại ID trong producer. Quy tắc content-hash này phù hợp với PaySim hiện tại (manifest báo không có duplicate toàn dòng); nguồn giao dịch thật cần ID bền vững do hệ thống nguồn cấp, vì hai giao dịch giống hệt nội dung vẫn phải phân biệt được.
 2. `event_id` tạo ổn định từ cùng `transaction_id` để replay không biến một giao dịch cũ thành event mới.
 3. `event_time = simulation_origin_utc + step giờ`, với `simulation_origin_utc` được cấu hình và ghi trong run manifest. Đây là thời gian mô phỏng, không phải thời gian giao dịch thật.
 4. `ingested_at` là UTC lúc producer phát event.

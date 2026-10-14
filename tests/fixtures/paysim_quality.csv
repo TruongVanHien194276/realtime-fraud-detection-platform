@@ -1,0 +1,5 @@
+step,type,amount,nameOrig,oldbalanceOrg,newbalanceOrig,nameDest,oldbalanceDest,newbalanceDest,isFraud,isFlaggedFraud
+1,TRANSFER,10.00,C_VALID,100.00,90.00,C_DEST,0.00,10.00,0,0
+1,TRANSFER,-10.00,C_NEGATIVE,100.00,110.00,C_DEST,0.00,10.00,0,0
+1,TRANSFER,10.00,C_MISMATCH,100.00,999.00,C_DEST,0.00,10.00,0,0
+1,TRANSFER,not-a-number,C_BAD_CSV,100.00,90.00,C_DEST,0.00,10.00,0,0

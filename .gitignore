@@ -34,3 +34,11 @@ tmp/
 *.duckdb
 *.db
 *.sqlite
+
+data/lakehouse/
+
+# Generated dbt state; models and tests under dbt/ remain versioned.
+dbt/target/
+dbt/logs/
+dbt/dbt_packages/
+dbt/.user.yml

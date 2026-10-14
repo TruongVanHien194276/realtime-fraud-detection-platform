@@ -1,0 +1,13 @@
+FROM python:3.11-slim-bookworm
+
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+ENV PIP_DISABLE_PIP_VERSION_CHECK=1
+
+WORKDIR /workspace/dbt
+
+RUN python -m pip install --no-cache-dir \
+    dbt-core==1.10.13 \
+    dbt-postgres==1.10.0
+
+CMD ["dbt", "--version"]
