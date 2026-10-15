@@ -1,0 +1,52 @@
+{
+  "uid": "fraud-week9-airflow-runs",
+  "title": "Fraud Platform · Airflow DAG Runs",
+  "description": "Latest run per project DAG, read from the local Airflow metadata database by the read-only exporter. A value of 1 means success.",
+  "tags": ["fraud", "week9", "airflow"],
+  "timezone": "utc",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "15s",
+  "time": {"from": "now-1h", "to": "now"},
+  "panels": [
+    {
+      "id": 1,
+      "title": "Batch + backfill · latest run success",
+      "type": "stat",
+      "gridPos": {"x": 0, "y": 0, "w": 8, "h": 5},
+      "datasource": {"type": "prometheus", "uid": "fraud-prometheus"},
+      "targets": [{"expr": "fraud_airflow_latest_run_success{dag_id=\"fraud_week9_batch_100k\"}", "refId": "A"}],
+      "options": {"reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}},
+      "fieldConfig": {"defaults": {"min": 0, "max": 1, "thresholds": {"mode": "absolute", "steps": [{"color": "red", "value": null}, {"color": "green", "value": 1}]}}, "overrides": []}
+    },
+    {
+      "id": 2,
+      "title": "Daily labels · latest run success",
+      "type": "stat",
+      "gridPos": {"x": 8, "y": 0, "w": 8, "h": 5},
+      "datasource": {"type": "prometheus", "uid": "fraud-prometheus"},
+      "targets": [{"expr": "fraud_airflow_latest_run_success{dag_id=\"fraud_week9_daily_labels\"}", "refId": "A"}],
+      "options": {"reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}},
+      "fieldConfig": {"defaults": {"min": 0, "max": 1, "thresholds": {"mode": "absolute", "steps": [{"color": "red", "value": null}, {"color": "green", "value": 1}]}}, "overrides": []}
+    },
+    {
+      "id": 3,
+      "title": "Candidate retraining · latest run success",
+      "type": "stat",
+      "gridPos": {"x": 16, "y": 0, "w": 8, "h": 5},
+      "datasource": {"type": "prometheus", "uid": "fraud-prometheus"},
+      "targets": [{"expr": "fraud_airflow_latest_run_success{dag_id=\"fraud_week9_candidate_retraining\"}", "refId": "A"}],
+      "options": {"reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}},
+      "fieldConfig": {"defaults": {"min": 0, "max": 1, "thresholds": {"mode": "absolute", "steps": [{"color": "red", "value": null}, {"color": "green", "value": 1}]}}, "overrides": []}
+    },
+    {
+      "id": 4,
+      "title": "Successful tasks in latest run",
+      "type": "timeseries",
+      "gridPos": {"x": 0, "y": 5, "w": 24, "h": 7},
+      "datasource": {"type": "prometheus", "uid": "fraud-prometheus"},
+      "targets": [{"expr": "fraud_airflow_latest_task_success_count", "refId": "A", "legendFormat": "{{dag_id}} successful"}],
+      "fieldConfig": {"defaults": {"unit": "short", "min": 0}, "overrides": []}
+    }
+  ]
+}

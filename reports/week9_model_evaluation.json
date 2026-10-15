@@ -1,0 +1,14 @@
+{
+  "evaluated_at_utc": "2026-10-15T08:06:42.580357+00:00",
+  "candidate": "logistic_safe_week9_candidate",
+  "feature_sha256": "505b4431166f1af686b6a6fa1cdb91d95dcaa3ae85960d253b3077bcf7da85a8",
+  "baseline_champion": "random_forest_safe",
+  "candidate_validation_ap": 0.006685939503840888,
+  "baseline_validation_ap": 0.04428491217742126,
+  "candidate_recall_at_capacity": 0.046153846153846156,
+  "baseline_recall_at_capacity": 0.16153846153846155,
+  "recommend_promotion": false,
+  "auto_promoted": false,
+  "test_evaluated": false,
+  "caveat": "Same synthetic feature cohort; validation comparison is not an independent holdout."
+}

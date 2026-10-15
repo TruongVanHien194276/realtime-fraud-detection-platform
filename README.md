@@ -92,7 +92,7 @@ make dbt-build
 make dbt-docs
 ```
 
-`make dbt-build` chạy 28 data tests và áp lại index sau build. Khi đổi window logic hoặc backfill ảnh hưởng lịch sử, dùng `make dbt-build DBT_FLAGS=--full-refresh`. Để xem dbt docs local, chạy `docker compose --profile warehouse run --rm -p 127.0.0.1:8081:8081 dbt dbt docs serve --host 0.0.0.0 --port 8081 --no-browser`, rồi mở `http://localhost:8081` (8080 có thể đang được Airflow dùng). Máy 8 GB nên chạy Spark và dbt theo từng job, không giữ chúng cùng lúc.
+`make dbt-build` chạy 28 data tests và áp lại index sau build. Khi đổi window logic hoặc backfill ảnh hưởng lịch sử, dùng `make dbt-build DBT_FLAGS=--full-refresh`. Để xem dbt docs local, chạy `docker compose --profile warehouse run --rm -p 127.0.0.1:8081:8081 dbt dbt docs serve --host 0.0.0.0 --port 8081 --no-browser`, rồi mở `http://localhost:8081` (Airflow Tuần 9 dùng 8082). Máy 8 GB nên chạy Spark và dbt theo từng job, không giữ chúng cùng lúc.
 
 ## Chạy lại Tuần 4
 
@@ -105,3 +105,30 @@ bash scripts/init_streaming_topics.sh
 ```
 
 Chuẩn bị replay từ Silver 100k, rồi chạy `spark/stream_transactions.py` bằng `spark-submit` với Kafka connector Spark 3.5.7 và Iceberg JAR. Chạy producer ở terminal khác; sau khi xử lý xong 999 giao dịch, gửi ba probe `late`, `invalid`, `malformed` và kiểm tra bằng `tests/integration/check_week4_stream.py`. Lệnh đầy đủ, quy tắc checkpoint/restart, giới hạn at-least-once và số đo 100/500 EPS nằm ở [tài liệu streaming](docs/streaming-semantics.md).
+
+## Chạy lại Tuần 9
+
+Khởi động Airflow local bằng `bash scripts/start_week9_airflow.sh` và mở `http://127.0.0.1:8082`. Airflow chỉ điều phối các job hữu hạn; streaming worker chạy riêng. Trên máy 8 GB, đừng đồng thời chạy Spark, ML training và toàn bộ monitoring stack.
+
+- `fraud_week9_batch_100k`: Bronze → Silver → lake quality → warehouse incoming → quality gate → merge → dbt Gold/tests. Trigger thủ công. Backfill với config `{"input_date":"2025-01-01"}`. DAG giới hạn một task và một run, retry một lần, timeout 45 phút mỗi task. Cùng ngày backfill chạy lại không duplicate; xem [bằng chứng](reports/week9_batch_idempotency.json).
+- `fraud_week9_daily_labels`: tổng hợp nhãn hằng ngày, upsert idempotent vào `fraud_ops.labels`.
+- `fraud_week9_candidate_retraining`: kiểm tra SHA của feature snapshot và chỉ train khi thay đổi; candidate được đánh giá trên validation window riêng, không tự promote hay dùng test holdout. Xem [báo cáo đánh giá](reports/week9_model_evaluation.json).
+
+Chạy quality report độc lập sau batch:
+
+```bash
+python3 scripts/week9_data_quality_report.py
+```
+
+[Báo cáo quality](reports/week9_data_quality.json) kiểm tra schema, uniqueness, referential integrity, volume, freshness và 28 dbt tests. Freshness dùng thời điểm kiểm tra thực tế, không dùng event date PaySim giả lập. Negative quality-gate test đã chứng minh Gold không đổi khi gate thất bại, còn Bronze vẫn giữ dữ liệu.
+
+Bật monitoring chỉ khi demo:
+
+```bash
+docker compose --profile monitoring --profile streaming --profile warehouse up -d postgres redpanda fraud_exporter prometheus grafana
+docker compose --profile api up -d api
+```
+
+Mở Grafana `http://127.0.0.1:3009/d/fraud-operations-week9/fraud-operations-week-9` và Prometheus `http://127.0.0.1:9099`. Dashboard được provision từ [JSON](monitoring/grafana/dashboards/fraud-operations.json). Consumer lag cần cấu hình Redpanda `enable_consumer_group_metrics` theo [runbook](docs/runbook.md); các số latency trên dữ liệu replay/backfill không đại diện độ trễ production. Sau demo, dừng stack bằng `docker compose --profile monitoring stop grafana prometheus fraud_exporter` để tiết kiệm RAM. Xem [runbook](docs/runbook.md) và [postmortem thử nghiệm](docs/week9-incident-postmortem.md).
+
+Ảnh minh chứng: [dashboard vận hành](reports/screenshots/week9-grafana.png) và [trạng thái 3 DAG thành công](reports/screenshots/week9-airflow-runs.png). Ảnh DAG là dashboard đọc metadata Airflow qua exporter, không phải ảnh giao diện Airflow. Chỉ bật renderer khi cần tạo lại PNG: `docker compose --profile monitoring-render up -d grafana_renderer`; sau đó dừng bằng `docker compose --profile monitoring-render stop grafana_renderer`.

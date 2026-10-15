@@ -2,6 +2,8 @@ RAW_PATH ?= data/raw/PS_20174392719_1491204439457_log.csv
 SPARK_WAREHOUSE ?= data/lakehouse
 WAREHOUSE_SAMPLE ?= data/tmp/week2-benchmark-100k-v1
 DBT_FLAGS ?=
+BRONZE_FLAGS ?=
+SILVER_FLAGS ?=
 SPARK_SUBMIT = docker compose run --rm spark spark-submit --master 'local[2]' --driver-memory 1g --jars /opt/iceberg/iceberg-spark-runtime.jar
 SPARK_SUBMIT_JDBC = docker compose run --rm spark spark-submit --master 'local[2]' --driver-memory 1g --jars /opt/iceberg/iceberg-spark-runtime.jar,/opt/jdbc/postgresql.jar
 
@@ -40,13 +42,13 @@ spark-build:
 	docker compose build spark
 
 bronze-100k:
-	$(SPARK_SUBMIT) spark/bronze_ingestion.py --input data/samples/representative_100k.parquet --format parquet --batch-id week2-dev-100k --warehouse $(SPARK_WAREHOUSE)
+	$(SPARK_SUBMIT) spark/bronze_ingestion.py --input data/samples/representative_100k.parquet --format parquet --batch-id week2-dev-100k --warehouse $(SPARK_WAREHOUSE) $(BRONZE_FLAGS)
 
 bronze-1m:
 	$(SPARK_SUBMIT) spark/bronze_ingestion.py --input data/samples/representative_1m.parquet --format parquet --batch-id week2-integration-1m --warehouse $(SPARK_WAREHOUSE)
 
 silver:
-	$(SPARK_SUBMIT) spark/silver_transform.py --warehouse $(SPARK_WAREHOUSE)
+	$(SPARK_SUBMIT) spark/silver_transform.py --warehouse $(SPARK_WAREHOUSE) $(SILVER_FLAGS)
 
 verify-lakehouse:
 	$(SPARK_SUBMIT) spark/verify_lakehouse.py --warehouse $(SPARK_WAREHOUSE)

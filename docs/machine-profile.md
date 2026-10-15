@@ -17,11 +17,12 @@ Kiến trúc dự án được điều chỉnh cho MacBook Pro Apple M3 có 8 GB
 
 ## Ràng buộc triển khai
 
-- Runtime Spark/Airflow chạy trong container thay vì dùng Python và Java trên host.
+- Spark chạy trong container; Airflow Tuần 9 chạy bằng virtualenv Python 3.12 riêng trên host để tránh thêm container Airflow thường trực. Không dùng Python 3.14 mặc định cho Airflow.
 - Tuần 1 pin DuckDB 1.5.6, PyArrow 23.0.1, Pydantic 2.14.1, pytest 9.1.1 và Ruff 0.17.0 trong `pyproject.toml`; các bản này đã build trên ARM64 container.
 - Ưu tiên image có hỗ trợ `linux/arm64`; tránh ép `amd64` vì emulation tốn CPU và RAM.
 - Spark chạy local mode với 2 cores trong developer loop.
 - Chỉ bật các Docker Compose profiles đang cần.
+- Monitoring chỉ bật khi demo: exporter 128 MB, Prometheus 256 MB, Grafana 256 MB; renderer ảnh 1 GB là profile tùy chọn và phải tắt sau khi chụp ảnh. Không chạy retraining cùng Spark hoặc renderer ảnh.
 - Dataset raw, checkpoint, model artifacts và lakehouse tables không được commit vào Git.
 - Dự án dùng Power BI Service/Fabric trong trình duyệt, không dùng Power BI Desktop hoặc Windows VM. Gold marts được đưa lên cloud dưới dạng Fabric Lakehouse/OneLake tables hoặc một Excel snapshot có version.
 

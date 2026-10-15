@@ -209,6 +209,72 @@ services:
     mem_limit: 1400m
     cpus: 2
 
+  fraud_exporter:
+    build:
+      context: .
+      dockerfile: Dockerfile.monitor
+    platform: linux/arm64
+    profiles: ["monitoring"]
+    working_dir: /workspace
+    volumes:
+      - .:/workspace:ro
+    environment:
+      PGHOST: postgres
+      PGPORT: "5432"
+      PGUSER: fraud
+      PGPASSWORD: ${POSTGRES_PASSWORD}
+      PGDATABASE: fraud_dw
+      FRAUD_RUN_ID: week5-smoke-v1
+    ports:
+      - "127.0.0.1:9109:9109"
+    mem_limit: 128m
+    cpus: 1
+
+  prometheus:
+    image: prom/prometheus:v3.6.0
+    platform: linux/arm64
+    profiles: ["monitoring"]
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --storage.tsdb.retention.time=4h
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - fraud_promdata:/prometheus
+    ports:
+      - "127.0.0.1:9099:9090"
+    mem_limit: 256m
+    cpus: 1
+
+  grafana:
+    image: grafana/grafana:12.2.0
+    platform: linux/arm64
+    profiles: ["monitoring"]
+    environment:
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      GF_RENDERING_SERVER_URL: http://grafana_renderer:8081/render
+      GF_RENDERING_CALLBACK_URL: http://grafana:3000/
+    volumes:
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards:ro
+    ports:
+      - "127.0.0.1:3009:3000"
+    mem_limit: 256m
+    cpus: 1
+
+  grafana_renderer:
+    image: grafana/grafana-image-renderer@sha256:a643fd3ee669ff1b6927d5589c37ee1078b52fc76cea9a7bf8e247357e9d9dd1
+    platform: linux/arm64
+    profiles: ["monitoring-render"]
+    environment:
+      GOMEMLIMIT: 256MiB
+      BROWSER_WS_URL_READ_TIMEOUT: 60s
+    mem_limit: 1024m
+    cpus: 2
+
 volumes:
   fraud_pgdata:
   fraud_redpanda:
+  fraud_promdata:

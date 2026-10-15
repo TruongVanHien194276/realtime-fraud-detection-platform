@@ -1,0 +1,51 @@
+{
+  "checked_at_utc": "2026-10-15T08:21:33.170067+00:00",
+  "warehouse": {
+    "raw_rows": 100000,
+    "gold_rows": 100000,
+    "gold_unique_ids": 100000,
+    "gold_required_nulls": 0,
+    "missing_customers": 0,
+    "missing_recipients": 0,
+    "missing_dates": 0,
+    "required_schema_columns": 5
+  },
+  "lake": {
+    "bronze_rows": 100000,
+    "valid_rows": 100000,
+    "rejected_rows": 0,
+    "duplicate_ids": 0
+  },
+  "incoming": {
+    "row_count": 100000,
+    "distinct_ids": 100000,
+    "required_nulls": 0,
+    "invalid_amounts": 0,
+    "invalid_types": 0,
+    "source_hashes": 1,
+    "first_event_date": "2025-01-01",
+    "last_event_date": "2025-01-31"
+  },
+  "dbt": {
+    "generated_at": "2026-10-15T06:53:53.973225Z",
+    "test_count": 28,
+    "passed_tests": 28
+  },
+  "checks": {
+    "lake_reconciliation": true,
+    "incoming_contract": true,
+    "required_gold_schema": true,
+    "gold_unique": true,
+    "gold_required_fields": true,
+    "gold_volume_matches_raw": true,
+    "customer_referential_integrity": true,
+    "recipient_referential_integrity": true,
+    "date_referential_integrity": true,
+    "dbt_tests_pass": true,
+    "lake_check_fresh": true,
+    "incoming_check_fresh": true,
+    "dbt_run_fresh": true
+  },
+  "passed": true,
+  "freshness_note": "Checks are wall-clock fresh; PaySim event dates are simulated."
+}

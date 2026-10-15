@@ -1,0 +1,120 @@
+{
+  "uid": "fraud-operations-week9",
+  "title": "Fraud Platform · Operations",
+  "description": "Local demo. Batch quality and decisions are persisted snapshots; API and broker metrics are live only when those services are running. PaySim event dates are simulated.",
+  "tags": ["fraud", "week9", "operations"],
+  "timezone": "utc",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "15s",
+  "time": {"from": "now-1h", "to": "now"},
+  "panels": [
+    {
+      "id": 1,
+      "title": "Lake rows processed",
+      "type": "stat",
+      "gridPos": {"x": 0, "y": 0, "w": 6, "h": 4},
+      "datasource": {"type": "prometheus", "uid": "fraud-prometheus"},
+      "targets": [{"expr": "fraud_lake_processed_count", "refId": "A"}],
+      "options": {"reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}},
+      "fieldConfig": {"defaults": {"unit": "short"}, "overrides": []}
+    },
+    {
+      "id": 2,
+      "title": "Lake rows rejected",
+      "type": "stat",
+      "gridPos": {"x": 6, "y": 0, "w": 6, "h": 4},
+      "datasource": {"type": "prometheus", "uid": "fraud-prometheus"},
+      "targets": [{"expr": "fraud_lake_rejected_count", "refId": "A"}],
+      "options": {"reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}},
+      "fieldConfig": {"defaults": {"unit": "short"}, "overrides": []}
+    },
+    {
+      "id": 3,
+      "title": "Decisions persisted",
+      "type": "stat",
+      "gridPos": {"x": 12, "y": 0, "w": 6, "h": 4},
+      "datasource": {"type": "prometheus", "uid": "fraud-prometheus"},
+      "targets": [{"expr": "fraud_decisions_count", "refId": "A"}],
+      "options": {"reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}},
+      "fieldConfig": {"defaults": {"unit": "short"}, "overrides": []}
+    },
+    {
+      "id": 4,
+      "title": "E2E decision p95",
+      "type": "stat",
+      "gridPos": {"x": 18, "y": 0, "w": 6, "h": 4},
+      "datasource": {"type": "prometheus", "uid": "fraud-prometheus"},
+      "targets": [{"expr": "fraud_e2e_latency_p95_seconds", "refId": "A"}],
+      "options": {"reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}},
+      "fieldConfig": {"defaults": {"unit": "s"}, "overrides": []}
+    },
+    {
+      "id": 5,
+      "title": "Live decision rate / s",
+      "type": "timeseries",
+      "gridPos": {"x": 0, "y": 4, "w": 12, "h": 7},
+      "datasource": {"type": "prometheus", "uid": "fraud-prometheus"},
+      "targets": [{"expr": "fraud_decision_rate_per_second", "refId": "A", "legendFormat": "decisions/s"}],
+      "fieldConfig": {"defaults": {"unit": "ops"}, "overrides": []}
+    },
+    {
+      "id": 6,
+      "title": "API p95 latency",
+      "type": "timeseries",
+      "gridPos": {"x": 12, "y": 4, "w": 12, "h": 7},
+      "datasource": {"type": "prometheus", "uid": "fraud-prometheus"},
+      "targets": [{"expr": "histogram_quantile(0.95, sum by (le) (rate(fraud_http_request_seconds_bucket{path=\"/score\"}[5m])))", "refId": "A", "legendFormat": "score p95"}],
+      "fieldConfig": {"defaults": {"unit": "s"}, "overrides": []}
+    },
+    {
+      "id": 7,
+      "title": "API error rate",
+      "type": "timeseries",
+      "gridPos": {"x": 0, "y": 11, "w": 8, "h": 7},
+      "datasource": {"type": "prometheus", "uid": "fraud-prometheus"},
+      "targets": [{"expr": "(sum(rate(fraud_http_requests_total{path=\"/score\",status=~\"5..\"}[5m])) or vector(0)) / clamp_min(sum(rate(fraud_http_requests_total{path=\"/score\"}[5m])), 0.001)", "refId": "A", "legendFormat": "5xx / all"}],
+      "fieldConfig": {"defaults": {"unit": "percentunit", "min": 0, "max": 1}, "overrides": []}
+    },
+    {
+      "id": 8,
+      "title": "Feature null ratio",
+      "type": "timeseries",
+      "gridPos": {"x": 8, "y": 11, "w": 8, "h": 7},
+      "datasource": {"type": "prometheus", "uid": "fraud-prometheus"},
+      "targets": [{"expr": "fraud_feature_null_ratio", "refId": "A", "legendFormat": "seconds_since_previous null"}],
+      "fieldConfig": {"defaults": {"unit": "percentunit", "min": 0, "max": 1}, "overrides": []}
+    },
+    {
+      "id": 9,
+      "title": "Kafka consumer lag",
+      "type": "timeseries",
+      "gridPos": {"x": 16, "y": 11, "w": 8, "h": 7},
+      "datasource": {"type": "prometheus", "uid": "fraud-prometheus"},
+      "targets": [{"expr": "sum by (redpanda_group) (redpanda_kafka_consumer_group_lag_sum)", "refId": "A", "legendFormat": "{{redpanda_group}}"}],
+      "fieldConfig": {"defaults": {"unit": "short"}, "overrides": []}
+    },
+    {
+      "id": 10,
+      "title": "Service targets up",
+      "type": "timeseries",
+      "gridPos": {"x": 0, "y": 18, "w": 12, "h": 6},
+      "datasource": {"type": "prometheus", "uid": "fraud-prometheus"},
+      "targets": [{"expr": "up{job=~\"fraud_exporter|fraud_api|redpanda\"}", "refId": "A", "legendFormat": "{{job}}"}],
+      "fieldConfig": {"defaults": {"min": 0, "max": 1}, "overrides": []}
+    },
+    {
+      "id": 11,
+      "title": "Decisions by action",
+      "type": "timeseries",
+      "gridPos": {"x": 12, "y": 18, "w": 12, "h": 6},
+      "datasource": {"type": "prometheus", "uid": "fraud-prometheus"},
+      "targets": [
+        {"expr": "fraud_review_count", "refId": "A", "legendFormat": "REVIEW persisted"},
+        {"expr": "fraud_block_count", "refId": "B", "legendFormat": "BLOCK persisted"},
+        {"expr": "sum by (decision) (fraud_score_responses_total)", "refId": "C", "legendFormat": "API {{decision}}"}
+      ],
+      "fieldConfig": {"defaults": {"unit": "short"}, "overrides": []}
+    }
+  ]
+}

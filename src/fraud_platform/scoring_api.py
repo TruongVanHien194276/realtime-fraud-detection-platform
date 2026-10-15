@@ -5,13 +5,15 @@ from contextlib import asynccontextmanager
 from datetime import datetime, timedelta
 from decimal import Decimal
 from math import isfinite, log1p
+from time import perf_counter
 
 import mlflow
 import mlflow.sklearn
 import pandas as pd
 import redis
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from mlflow.tracking import MlflowClient
+from prometheus_client import Counter, Histogram, make_asgi_app
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from fraud_platform.contracts import TransactionType
@@ -196,6 +198,41 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+HTTP_REQUESTS = Counter(
+    "fraud_http_requests_total",
+    "HTTP responses",
+    ["path", "status"],
+)
+HTTP_SECONDS = Histogram(
+    "fraud_http_request_seconds",
+    "HTTP request duration in seconds",
+    ["path"],
+    buckets=(0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1, 2),
+)
+SCORE_RESPONSES = Counter(
+    "fraud_score_responses_total",
+    "Scoring responses, including cache hits",
+    ["decision", "degraded"],
+)
+
+app.mount("/metrics", make_asgi_app())
+
+
+@app.middleware("http")
+async def observe_http(request: Request, call_next):
+    # Chỉ dùng path cố định làm label; không đưa transaction_id vào metric.
+    path = request.url.path
+    path = path if path in {"/score", "/health", "/ready", "/model-info"} else "other"
+    started = perf_counter()
+    status = 500  # Unhandled exceptions still contribute to the error-rate metric.
+    try:
+        response = await call_next(request)
+        status = response.status_code
+        return response
+    finally:
+        HTTP_REQUESTS.labels(path, str(status)).inc()
+        HTTP_SECONDS.labels(path).observe(perf_counter() - started)
+
 
 @app.get("/health")
 def health():
@@ -240,7 +277,9 @@ def score(request: ScoreRequest):
         try:
             cached = cache.get(key)
             if cached:
-                return ScoreResponse.model_validate_json(cached)
+                response = ScoreResponse.model_validate_json(cached)
+                SCORE_RESPONSES.labels(response.decision, str(response.degraded).lower()).inc()
+                return response
         except redis.RedisError:
             pass
 
@@ -309,4 +348,5 @@ def score(request: ScoreRequest):
         except redis.RedisError:
             pass
 
+    SCORE_RESPONSES.labels(result.decision, str(result.degraded).lower()).inc()
     return result

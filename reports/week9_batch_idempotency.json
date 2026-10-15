@@ -1,0 +1,54 @@
+{
+  "verified_at_utc": "2026-10-15",
+  "dag_id": "fraud_week9_batch_100k",
+  "sample": "data/samples/representative_100k.parquet",
+  "runs": [
+    {
+      "run_id": "week9-step4-fixed",
+      "input_date": null,
+      "state": "success",
+      "successful_tasks": 8
+    },
+    {
+      "run_id": "week9-step5-backfill-2025-01-01",
+      "input_date": "2025-01-01",
+      "state": "success",
+      "successful_tasks": 8
+    },
+    {
+      "run_id": "week9-step5-retry-2025-01-01",
+      "input_date": "2025-01-01",
+      "state": "success",
+      "successful_tasks": 8
+    }
+  ],
+  "backfill_unique_rows_in_batch": 9065,
+  "rows_after_initial_run": {
+    "bronze": 100000,
+    "silver_valid": 100000,
+    "incoming": 100000,
+    "warehouse_raw": 100000,
+    "gold_fact": 100000
+  },
+  "rows_after_backfill_and_replay": {
+    "bronze": 100000,
+    "silver_valid": 100000,
+    "incoming": 100000,
+    "warehouse_raw": 100000,
+    "gold_fact": 100000
+  },
+  "duplicate_transaction_ids": {
+    "bronze": 0,
+    "incoming": 0,
+    "warehouse_raw": 0,
+    "gold_fact": 0
+  },
+  "negative_quality_test": {
+    "forced_min_rows": 100001,
+    "actual_incoming_rows": 100000,
+    "gate_exit_code": 1,
+    "gold_fact_rows_before": 100000,
+    "gold_fact_rows_after": 100000
+  },
+  "result": "pass"
+}
