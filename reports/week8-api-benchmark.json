@@ -1,0 +1,17 @@
+{
+  "measured_window_utc": "2026-10-15T05:15:42Z–2026-10-15T05:15:51Z",
+  "machine": "Apple M3, 8 GiB RAM, Docker VM ~3.83 GiB",
+  "model_at_measurement": "fraud-risk-safe candidate version 2; same version subsequently promoted to champion",
+  "scope": "Local loopback API, one Uvicorn worker, Redis available, unique transaction IDs across runs, sequential requests; not a concurrent load or production SLA",
+  "runs": [
+    "week8-api-benchmark-run1.json",
+    "week8-api-benchmark-run2.json",
+    "week8-api-benchmark-run3.json"
+  ],
+  "requests_per_run": 200,
+  "total_requests": 600,
+  "total_errors": 0,
+  "error_rate": 0.0,
+  "median_run_p50_ms": 17.18,
+  "median_run_p95_ms": 30.94
+}

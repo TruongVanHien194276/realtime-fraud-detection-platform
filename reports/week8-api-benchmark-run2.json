@@ -1,0 +1,11 @@
+{
+  "measured_at_utc": "2026-10-15T05:15:47.022147+00:00",
+  "url": "http://127.0.0.1:8002/score",
+  "method": "sequential, unique transaction_id per request, one API worker",
+  "run_id": "62864956771e",
+  "requests": 200,
+  "errors": 0,
+  "error_rate": 0.0,
+  "p50_ms": 17.18,
+  "p95_ms": 35.2
+}

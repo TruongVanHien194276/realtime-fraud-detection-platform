@@ -1,0 +1,38 @@
+{
+  "request": {
+    "transaction": {
+      "transaction_id": "tx-current",
+      "event_time": "2025-01-01T10:30:00Z",
+      "step": 10,
+      "transaction_type": "TRANSFER",
+      "amount": "999",
+      "customer_id": "C1",
+      "recipient_id": "R1",
+      "old_balance_origin": "5000"
+    },
+    "history": [
+      {
+        "transaction_id": "tx-prior-hour",
+        "event_time": "2025-01-01T09:10:00Z",
+        "step": 9,
+        "amount": "100",
+        "customer_id": "C1",
+        "recipient_id": "R1"
+      },
+      {
+        "transaction_id": "tx-same-hour",
+        "event_time": "2025-01-01T10:05:00Z",
+        "step": 10,
+        "amount": "200",
+        "customer_id": "C1",
+        "recipient_id": "R1"
+      }
+    ]
+  },
+  "expected_model_counts": {
+    "customer_count_24h": 1,
+    "recipient_count_24h": 1,
+    "pair_count_24h": 1
+  },
+  "expected_rule_customer_count_24h": 2
+}

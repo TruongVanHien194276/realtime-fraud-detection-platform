@@ -183,6 +183,32 @@ services:
       MKL_NUM_THREADS: "2"
     mem_limit: 2g
     cpus: 2
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    platform: linux/arm64
+    profiles: ["api"]
+    working_dir: /workspace
+    volumes:
+      - .:/workspace
+    environment:
+      PYTHONPATH: /workspace/src
+      MLFLOW_TRACKING_URI: sqlite:////workspace/data/ml/week7/mlflow.db
+      MODEL_NAME: fraud-risk-safe
+      MODEL_ALIAS: champion
+      RULES_PATH: /workspace/config/rules-v1.yaml
+      REDIS_URL: redis://redis:6379/0
+      MODEL_REVIEW_AT: "0.9546722331383121"
+      ALLOW_MODEL_BLOCK: "false"
+      MODEL_BLOCK_AT: "0.99"
+      FALLBACK_MODE: rule_only
+    ports:
+      - "127.0.0.1:8002:8000"
+    mem_limit: 1400m
+    cpus: 2
+
 volumes:
   fraud_pgdata:
   fraud_redpanda:
