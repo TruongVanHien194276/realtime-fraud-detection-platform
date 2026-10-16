@@ -2,17 +2,45 @@
 
 Nền tảng phát hiện gian lận gần thời gian thực cho giao dịch mobile money. Dự án được thiết kế để thể hiện năng lực Data Engineering, Analytics Engineering, BI và ML Engineering trong cùng một sản phẩm có thể demo.
 
+**Portfolio release path:** xem [kiến trúc triển khai thực tế](docs/architecture-final.md), [báo cáo performance](reports/week10/performance.md), [GIF minh chứng](demo/week10-evidence.gif), [demo/phỏng vấn](docs/interview-guide.md), [CV bullets có bằng chứng](docs/cv-bullets.md), [release notes](docs/release-notes-v1.0.0.md) và [runbook](docs/runbook.md). GIF là montage từ benchmark và screenshot đã lưu, không phải quay live end-to-end. Spark streaming và rules worker tạo đường quyết định vận hành; hybrid API là đường scoring riêng, chưa được gọi bởi mỗi event Kafka. Power BI Cloud report chỉ được coi là hoàn thành khi có export cloud thật.
+
+## Quickstart từ clean checkout, không cần PaySim
+
+Cần Docker Desktop/Compose, `make`, và khoảng 4 GiB Docker VM. Trên Apple M3 8 GiB, chạy từng pha, không bật Spark cùng ML training hoặc Grafana renderer. `.env` là local secret và bị Git ignore. Tạo nó từ template rồi thay password nếu dùng PostgreSQL:
+
+```bash
+cp .env.example .env
+docker compose config --quiet
+docker compose build dev spark
+docker compose run --rm dev python scripts/week10_demo_fixture.py \
+  --output data/tmp/clean-demo.csv --rows 1000
+DEMO_SHA="$(openssl dgst -sha256 data/tmp/clean-demo.csv | awk '{print $NF}')"
+docker compose run --rm spark spark-submit --master 'local[2]' \
+  --driver-memory 1g --jars /opt/iceberg/iceberg-spark-runtime.jar \
+  spark/bronze_ingestion.py --input data/tmp/clean-demo.csv --format csv \
+  --batch-id clean-demo --source-sha256 "$DEMO_SHA" \
+  --warehouse data/tmp/clean-demo-lake
+docker compose run --rm spark spark-submit --master 'local[2]' \
+  --driver-memory 1g --jars /opt/iceberg/iceberg-spark-runtime.jar \
+  spark/silver_transform.py --warehouse data/tmp/clean-demo-lake
+docker compose run --rm spark spark-submit --master 'local[2]' \
+  --driver-memory 1g --jars /opt/iceberg/iceberg-spark-runtime.jar \
+  spark/verify_lakehouse.py --warehouse data/tmp/clean-demo-lake
+```
+
+Kỳ vọng `Bronze: 1000`, `Silver valid + Silver quarantine = 1000`, `Duplicate IDs in Bronze: 0`, `RECONCILIATION PASSED`. Đây là dữ liệu **tổng hợp để smoke test**, không dùng làm benchmark hoặc đánh giá fraud model. Nếu chạy lại, dùng tên output/warehouse mới, ví dụ `clean-demo-r2`; không xóa warehouse cũ để đổi kết quả. Muốn tái tạo benchmark PaySim thật, tải dataset theo [hướng dẫn dữ liệu](docs/dataset-guide.md), tạo samples, rồi xem [performance report](reports/week10/performance.md).
+
 Tài liệu triển khai chính: [ROADMAP.md](ROADMAP.md). Hướng dẫn dữ liệu nằm tại [docs/dataset-guide.md](docs/dataset-guide.md); kết quả Tuần 1 gồm [yêu cầu nghiệp vụ](docs/business-requirements.md), [data contracts](docs/data-contracts.md), [kiến trúc v1](docs/architecture-v1.md) và [data profile](docs/data-profile.md).
 
 ## Mục tiêu cuối
 
 - Replay dữ liệu PaySim thành luồng giao dịch trên Redpanda/Kafka API.
 - Xử lý event-time, duplicate và late event bằng PySpark Structured Streaming.
-- Lưu Bronze, Silver và Gold dưới dạng Parquet/Apache Iceberg.
+- Lưu Bronze/Silver bằng Apache Iceberg và Gold marts trong PostgreSQL/dbt.
 - Xây data warehouse PostgreSQL và mô hình dbt dạng star schema.
 - Kết hợp fraud rules với mô hình ML để trả về `APPROVE`, `REVIEW` hoặc `BLOCK`.
 - Theo dõi experiment và model version bằng MLflow; phục vụ điểm rủi ro qua FastAPI.
-- Trình bày fraud operations và model monitoring bằng Power BI Service/Fabric trong trình duyệt; Streamlit chỉ dùng để kiểm tra KPI local trước khi đưa dữ liệu curated lên cloud.
+- Xuất snapshot curated cho Power BI Service/Fabric; report Cloud chỉ được ghi nhận khi có artifact publish thật. Grafana vận hành và Streamlit validation là hai dashboard local riêng.
 
 ## Cấu trúc thư mục
 
@@ -44,6 +72,8 @@ Tuần 7 có ML baseline theo temporal split trên mẫu PaySim 1m, MLflow track
 Kết quả, leakage checklist và giới hạn của dữ liệu giả lập nằm trong
 [báo cáo Tuần 7](docs/week7-ml.md). Model dùng số dư cho điểm gần tuyệt đối
 do quy luật PaySim nên không được chọn làm candidate cho Tuần 8.
+
+Tuần 10 có benchmark batch 100k/1m, replay burst ở ba mức 100/500/1.000 EPS, kiểm thử failure, API fallback có deadline, tài liệu kiến trúc/ADR và gói portfolio. Các giới hạn đo đạc và hạng mục Power BI Cloud chưa xác nhận được nêu thẳng trong [báo cáo Tuần 10](reports/week10/performance.md). CI chạy lint/unit tests; kết quả local được xác minh riêng trước khi gắn tag.
 
 ## Chạy lại Tuần 1
 

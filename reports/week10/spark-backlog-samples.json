@@ -1,0 +1,24 @@
+{
+  "method": "Redpanda transactions.raw partition-0 high watermark minus the latest completed Spark checkpoint batch end offset",
+  "observations": [
+    {
+      "phase": "1000-EPS replay, after completed batch 5",
+      "broker_high_watermark": 7153,
+      "spark_completed_end_offset": 7132,
+      "observed_backlog_records": 21
+    },
+    {
+      "phase": "1000-EPS replay drained, after completed batch 6",
+      "broker_high_watermark": 7153,
+      "spark_completed_end_offset": 7153,
+      "observed_backlog_records": 0
+    },
+    {
+      "phase": "restart and DLQ probes drained, after completed batch 8",
+      "broker_high_watermark": 7166,
+      "spark_completed_end_offset": 7166,
+      "observed_backlog_records": 0
+    }
+  ],
+  "limitations": "Sparse read-only observations, not peak lag or a lag time series. Spark's checkpoint offset is used here; the Grafana consumer-group lag panel is for the rules worker and must not be relabeled as Spark lag."
+}

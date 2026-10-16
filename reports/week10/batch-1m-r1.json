@@ -1,0 +1,23 @@
+{
+  "scope": "Apple M3 8 GiB; Docker VM approximately 3.83 GiB; cold isolated Iceberg warehouse; Spark local[2], driver 1g; Bronze and Silver sequential",
+  "input": "data/samples/representative_1m.parquet",
+  "input_sha256": "a64eaecef34800562cac9d7d180106558a8b1deec170600683186ce5d04463",
+  "warehouse": "data/tmp/week10/batch-1m-r1",
+  "input_rows": 1000000,
+  "bronze_rows": 1000000,
+  "silver_valid_rows": 1000000,
+  "silver_quarantine_rows": 0,
+  "reconciled": true,
+  "bronze_job_elapsed_seconds": 271.45,
+  "silver_job_elapsed_seconds": 88.08,
+  "bronze_wall_seconds": 288.56,
+  "silver_wall_seconds": 97.13,
+  "source_logs": [
+    "data/tmp/week10/1m-bronze.log",
+    "data/tmp/week10/1m-silver.log"
+  ],
+  "resource_reports": [
+    "reports/week10/1m-bronze-resources.json",
+    "reports/week10/1m-silver-resources.json"
+  ]
+}

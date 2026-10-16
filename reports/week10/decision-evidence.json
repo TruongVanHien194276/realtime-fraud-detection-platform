@@ -1,0 +1,15 @@
+{
+  "source": "PostgreSQL fraud_ops.decisions and fraud_ops.outbox",
+  "run_id": "week5-smoke-v1",
+  "decision_counts": {
+    "APPROVE": 301,
+    "REVIEW": 665,
+    "BLOCK": 33
+  },
+  "outbox_topic_counts": {
+    "fraud.decisions": 999,
+    "fraud.alerts": 698,
+    "fraud.labels": 999
+  },
+  "note": "Historical Week 5 smoke run; these are not fresh decisions from the Week 10 benchmark replay. Alerts are outbox records, not a separate PostgreSQL alerts table."
+}

@@ -1,0 +1,8 @@
+{
+  "source": "data/tmp/week10/stream-1000-stats.jsonl",
+  "container": "fraud-week10-stream-1000",
+  "samples": 6,
+  "max_sampled_cpu_percent": 199.21,
+  "max_sampled_memory_mib": 1165.3,
+  "measurement_note": "Maximum among Docker stats samples, not a guaranteed peak; CPU may exceed 100% on a multi-core container"
+}

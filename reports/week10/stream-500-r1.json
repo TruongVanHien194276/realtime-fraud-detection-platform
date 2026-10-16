@@ -1,0 +1,11 @@
+{
+  "stream_id": "week10-500-r1",
+  "silver_rows": 999,
+  "distinct_transaction_ids": 999,
+  "processing_delay_p50_ms": 35599,
+  "processing_delay_p95_ms": 71706,
+  "processing_delay_p99_ms": 82363,
+  "first_ingested_at": "2026-10-15T16:54:22.115431",
+  "last_audit_completed_at": "2026-10-15T16:55:54.510539",
+  "measurement_note": "processing_delay_ms ends at micro-batch start; it is not sink-commit or fraud-decision latency"
+}

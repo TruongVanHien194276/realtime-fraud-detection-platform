@@ -1,0 +1,20 @@
+{
+  "scope": "Apple M3 8 GiB; Docker VM approximately 3.83 GiB; cold isolated Iceberg warehouse; Spark local[2], driver 1g; Bronze and Silver sequential",
+  "input": "data/samples/representative_100k.parquet",
+  "input_sha256": "cc22d06487a0b2313d5c89b03e115c0822918a8eb72d251fd030b0a6b5a058c3",
+  "warehouse": "data/tmp/week10/batch-100k-r1",
+  "input_rows": 100000,
+  "bronze_rows": 100000,
+  "silver_valid_rows": 100000,
+  "silver_quarantine_rows": 0,
+  "reconciled": true,
+  "bronze_job_elapsed_seconds": 28.78,
+  "silver_job_elapsed_seconds": 29.71,
+  "bronze_wall_seconds": 37.5,
+  "silver_wall_seconds": 34.74,
+  "source_logs": [
+    "data/tmp/week10/100k-bronze.log",
+    "data/tmp/week10/100k-silver.log"
+  ],
+  "memory_note": "The one docker-stats sample was taken early in the Silver job; it is not a peak memory estimate."
+}

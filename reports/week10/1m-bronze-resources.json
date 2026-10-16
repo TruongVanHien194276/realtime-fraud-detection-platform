@@ -1,0 +1,8 @@
+{
+  "source": "data/tmp/week10/1m-bronze-stats.jsonl",
+  "container": "fraud-week10-bronze-1m",
+  "samples": 564,
+  "max_sampled_cpu_percent": 457.5,
+  "max_sampled_memory_mib": 1408.0,
+  "measurement_note": "Maximum among Docker stats samples, not a guaranteed peak; CPU may exceed 100% on a multi-core container"
+}

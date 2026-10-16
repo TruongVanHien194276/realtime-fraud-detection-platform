@@ -204,6 +204,7 @@ services:
       ALLOW_MODEL_BLOCK: "false"
       MODEL_BLOCK_AT: "0.99"
       FALLBACK_MODE: rule_only
+      MODEL_TIMEOUT_SECONDS: "0.25"
     ports:
       - "127.0.0.1:8002:8000"
     mem_limit: 1400m

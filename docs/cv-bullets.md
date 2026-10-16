@@ -1,0 +1,11 @@
+# CV bullets with evidence boundaries
+
+Use only bullets whose linked artifacts have been verified on the release commit. Replace measurements only by editing the linked report first.
+
+- Built a local fraud data platform with PySpark, Iceberg, Redpanda, PostgreSQL/dbt, Redis, MLflow, and FastAPI; reconciled a 100,000-row Bronze/Silver/Gold batch and passed 28/28 dbt tests. Evidence: [`reports/week9_data_quality.json`](../reports/week9_data_quality.json).
+- Implemented replay-safe streaming ingestion with transaction-ID deduplication, event-time late-event handling, dead-letter routing, and checkpoint restart semantics. Evidence: [`docs/streaming-semantics.md`](streaming-semantics.md) and the [Week 10 failure matrix](../reports/week10/failure-matrix.md).
+- Built a version-pinned hybrid scoring API with hard-rule precedence and rule-only fallback when model inference is unavailable or times out. Evidence: [`tests/unit/test_week8_api.py`](../tests/unit/test_week8_api.py), [`tests/unit/test_week10_api_timeout.py`](../tests/unit/test_week10_api_timeout.py), and the [Week 10 API measurements](../reports/week10/performance.md).
+- Benchmarked an isolated 1,000,000-row Bronze/Silver run on an 8 GiB Apple M3 laptop: 1,000,000 valid rows, zero quarantine/duplicate IDs, and 385.69 seconds combined wall time (~2,593 rows/s). Evidence: [`reports/week10/batch-1m-r1.json`](../reports/week10/batch-1m-r1.json) and [`reports/week10/performance.md`](../reports/week10/performance.md). This is a local cold run, not cluster throughput.
+- Measured short 100/500/1,000 offered-EPS replay bursts, all producing 999 unique Silver IDs, and documented p95 producer-to-micro-batch-start delays of 41.67/71.71/49.00 seconds respectively. Evidence: [`reports/week10/performance.md`](../reports/week10/performance.md). These figures demonstrate backlog/measurement discipline, **not** sustained 1,000 EPS or subsecond scoring.
+
+Do **not** write “1,000 EPS sustained”, “under 5 seconds real-time”, “end-to-end exactly once”, “production-grade high availability”, or “Power BI Cloud published” without matching evidence. API numbers are local sequential, one worker; streaming numbers are local burst replay. See [`reports/week10/performance.md`](../reports/week10/performance.md) for scope and limitations.

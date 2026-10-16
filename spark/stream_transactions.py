@@ -269,8 +269,10 @@ def main() -> None:
             )
 
         max_event_time = current_max or previous_max
+        completed_at = datetime.now(UTC)
+
         spark.createDataFrame(
-            [(args.stream_id, batch_id, max_event_time, processed_at)],
+            [(args.stream_id, batch_id, max_event_time, completed_at)],
             schema=T.StructType(
                 [
                     T.StructField("stream_id", T.StringType(), False),

@@ -1,0 +1,8 @@
+{
+  "source": "data/tmp/week10/api-stats.jsonl",
+  "container": "realtime-fraud-detection-platform-api-1",
+  "samples": 24,
+  "max_sampled_cpu_percent": 140.38,
+  "max_sampled_memory_mib": 213.6,
+  "measurement_note": "Maximum among Docker stats samples, not a guaranteed peak; CPU may exceed 100% on a multi-core container"
+}

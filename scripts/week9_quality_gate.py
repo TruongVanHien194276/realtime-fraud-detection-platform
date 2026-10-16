@@ -76,7 +76,22 @@ def main() -> None:
     )
     args = parser.parse_args()
 
-    metrics = read_metrics()
+    try:
+        metrics = read_metrics()
+    except subprocess.CalledProcessError as error:
+        # Persist the negative gate result even when the warehouse cannot be
+        # queried; Airflow must not continue to merge/build Gold on this path.
+        report = {
+            "checked_at_utc": datetime.now(UTC).isoformat(),
+            "source": "warehouse_raw.transactions_silver_incoming",
+            "passed": False,
+            "failure_reason": "WAREHOUSE_UNAVAILABLE",
+            "upstream_exit_code": error.returncode,
+        }
+        args.output.parent.mkdir(parents=True, exist_ok=True)
+        args.output.write_text(json.dumps(report, indent=2) + "\n")
+        print(json.dumps(report, indent=2))
+        raise SystemExit("QUALITY GATE FAILED: PostgreSQL unavailable") from error
     checks = {
         "volume": args.min_rows <= metrics["row_count"] <= args.max_rows,
         "unique_transaction_id": (metrics["row_count"] == metrics["distinct_ids"]),

@@ -1,0 +1,25 @@
+{
+  "checked_at_utc": "2026-10-15T17:12:36.273627+00:00",
+  "source": "warehouse_raw.transactions_silver_incoming",
+  "metrics": {
+    "row_count": 100000,
+    "distinct_ids": 100000,
+    "required_nulls": 0,
+    "invalid_amounts": 0,
+    "invalid_types": 0,
+    "source_hashes": 1,
+    "first_event_date": "2025-01-01",
+    "last_event_date": "2025-01-31"
+  },
+  "checks": {
+    "volume": true,
+    "unique_transaction_id": true,
+    "required_columns_not_null": true,
+    "nonnegative_amount": true,
+    "accepted_transaction_type": true,
+    "one_source_dataset": true,
+    "simulated_event_date_present": true
+  },
+  "passed": true,
+  "freshness_note": "PaySim event dates are simulated; do not compare them with today's wall-clock date."
+}

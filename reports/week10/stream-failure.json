@@ -1,0 +1,29 @@
+{
+  "scenario": "Restart the 1000-EPS stream with the original warehouse, checkpoint, and stream ID, then inject duplicate, late, unsupported-schema, and malformed probes",
+  "warehouse": "data/tmp/week10/stream-lake-1000-r1",
+  "checkpoint": "checkpoints/week10/stream-1000-r1",
+  "stream_id": "week10-1000-r1",
+  "original_run": {
+    "fresh_rows": 999,
+    "completed_batches": 7
+  },
+  "restart": {
+    "replayed_source_rows": 10,
+    "batch_7_fresh": 0,
+    "batch_7_invalid": 0,
+    "batch_8_fresh": 0,
+    "batch_8_invalid": 3
+  },
+  "independent_verifier": {
+    "silver_rows": 999,
+    "distinct_transaction_ids": 999,
+    "completed_batches": 9,
+    "dlq_error_codes": [
+      "LATE_EVENT",
+      "MALFORMED_JSON",
+      "UNSUPPORTED_SCHEMA_VERSION"
+    ],
+    "result": "PASS"
+  },
+  "limits": "The raw and DLQ Kafka topics contain earlier local test history; the verifier also checks the withheld ID from this replay fixture and source trace fields. The test is local, not a production failover test."
+}

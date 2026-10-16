@@ -1,10 +1,13 @@
 import hashlib
 import json
 import os
+from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import TimeoutError as FutureTimeoutError
 from contextlib import asynccontextmanager
 from datetime import datetime, timedelta
 from decimal import Decimal
 from math import isfinite, log1p
+from threading import BoundedSemaphore
 from time import perf_counter
 
 import mlflow
@@ -26,6 +29,7 @@ REVIEW_AT = float(os.getenv("MODEL_REVIEW_AT", "0.9546722331383121"))
 BLOCK_AT = float(os.getenv("MODEL_BLOCK_AT", "0.99"))
 ALLOW_MODEL_BLOCK = os.getenv("ALLOW_MODEL_BLOCK", "false").lower() == "true"
 FALLBACK_MODE = os.getenv("FALLBACK_MODE", "rule_only")
+MODEL_TIMEOUT_SECONDS = float(os.getenv("MODEL_TIMEOUT_SECONDS", "0.25"))
 MODEL_FEATURE_VERSION = "week7-hourly-safe-v1"
 POLICY_VERSION = "hybrid-v1"
 
@@ -167,6 +171,9 @@ async def lifespan(app: FastAPI):
     app.state.model_version = None
     app.state.model_error = None
     app.state.redis = None
+    # One in-flight inference at a time bounds resource use on the 8 GiB laptop.
+    app.state.model_pool = ThreadPoolExecutor(max_workers=1, thread_name_prefix="fraud-model")
+    app.state.model_slots = BoundedSemaphore(1)
 
     # Pinned version: alias chỉ được resolve khi khởi động. Alias đổi giữa
     # các request không làm cùng process bất ngờ dùng model khác.
@@ -189,7 +196,37 @@ async def lifespan(app: FastAPI):
     except redis.RedisError:
         app.state.redis = None  # Cache không được là phụ thuộc correctness.
 
-    yield
+    try:
+        yield
+    finally:
+        # A timed-out Python thread cannot be killed safely. The semaphore keeps
+        # subsequent requests on the rule-only fallback until it finishes.
+        app.state.model_pool.shutdown(wait=False, cancel_futures=True)
+
+
+def predict_model_with_deadline(app: FastAPI, frame: pd.DataFrame) -> float:
+    if not app.state.model_slots.acquire(blocking=False):
+        raise FutureTimeoutError("model worker is busy")
+
+    model = app.state.model
+
+    def run_prediction() -> float:
+        try:
+            return float(model.predict_proba(frame)[0, 1])
+        finally:
+            app.state.model_slots.release()
+
+    try:
+        future = app.state.model_pool.submit(run_prediction)
+    except Exception:
+        app.state.model_slots.release()
+        raise
+
+    try:
+        return future.result(timeout=MODEL_TIMEOUT_SECONDS)
+    except FutureTimeoutError:
+        future.cancel()
+        raise
 
 
 app = FastAPI(
@@ -294,9 +331,11 @@ def score(request: ScoreRequest):
     model_score = None
     if app.state.model is not None:
         try:
-            model_score = float(app.state.model.predict_proba(model_frame(request))[0, 1])
+            model_score = predict_model_with_deadline(app, model_frame(request))
             if not isfinite(model_score) or not 0 <= model_score <= 1:
                 raise ValueError("Model returned an invalid probability")
+        except FutureTimeoutError:
+            reasons.append("MODEL_INFERENCE_TIMEOUT")
         except Exception:
             reasons.append("MODEL_INFERENCE_FAILED")
     else:
