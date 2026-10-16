@@ -21,7 +21,7 @@ Benchmark batch lạnh 1 triệu dòng trên máy 8 GiB: 1 triệu Silver hợp 
 
 ## Trạng thái và giới hạn còn lại
 
-- Batch, streaming, rule engine, ML baseline, registry, API, orchestration, data quality, Grafana và benchmark có code/bằng chứng local. CI có workflow, nhưng cần kiểm tra một hosted run sau khi push GitHub.
+- Batch, streaming, rule engine, ML baseline, registry, API, orchestration, data quality, Grafana và benchmark có code/bằng chứng local. GitHub Actions CI đã chạy thành công trên `main`; xem [trạng thái các lần chạy](https://github.com/TruongVanHien194276/realtime-fraud-detection-platform/actions).
 - Workbook curated có mask và Streamlit local validation đã có. **Power BI Cloud report/PDF chưa có bằng chứng publish** trong repo; không mô tả Week 6 là đã hoàn tất phần cloud cho đến khi có report thật. Xem [hướng dẫn BI](docs/power-bi-cloud-plan.md).
 - Một broker/partition/replica, một API worker và Docker VM khoảng 4 GiB không đại diện production HA. [Roadmap 10 tuần](ROADMAP.md) là kế hoạch lịch sử; kết quả thực tế nằm trong các artifact trên.
 

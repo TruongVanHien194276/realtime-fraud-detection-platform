@@ -188,4 +188,4 @@ Official constraints URL đã được kiểm tra tồn tại; tải gói cần 
 
 [Báo cáo Week 10](reports/week10/performance.md) chứa benchmark 100k/1m, burst offered EPS 100/500/1.000, p50/p95/p99, API tuần tự và failure cases. Số EPS là tốc độ producer **được cấu hình**, không chứng minh sustained throughput; độ trễ stream chỉ đến **đầu micro-batch**, không đến quyết định fraud. [Kiến trúc](docs/architecture-final.md) chỉ ra các nhánh thực sự nối với nhau; hybrid API tách khỏi rules worker. [Portfolio guide](docs/portfolio-guide.md) gợi ý demo và CV bullets có bằng chứng.
 
-Trạng thái chưa được xác nhận trong repo: Power BI Cloud report/PDF thật và GitHub Actions hosted run (cho đến khi push và CI chạy). Chúng là bước riêng cần kiểm tra trên tài khoản/workspace, không được tự đánh dấu hoàn thành chỉ từ snapshot local.
+GitHub Actions CI đã chạy thành công trên `main`; kiểm tra [lần chạy mới nhất](https://github.com/TruongVanHien194276/realtime-fraud-detection-platform/actions) sau mỗi lần push. Power BI Cloud report/PDF thật vẫn cần xác nhận trên đúng tài khoản/workspace; không được tự đánh dấu hoàn thành chỉ từ snapshot local.
