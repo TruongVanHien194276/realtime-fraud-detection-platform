@@ -4,12 +4,15 @@ on:
   push:
   pull_request:
 
+permissions:
+  contents: read
+
 jobs:
   core:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
           cache: pip
@@ -20,9 +23,9 @@ jobs:
       - run: pytest -q tests/unit --ignore=tests/unit/test_week8_api.py --ignore=tests/unit/test_week10_api_timeout.py
 
   api:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       # Compose pins ARM64 for the local M3. Build the Dockerfile natively on CI.
       - run: docker build -f Dockerfile.api -t fraud-api-ci .
       - run: |
