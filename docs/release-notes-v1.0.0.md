@@ -11,6 +11,6 @@ This release packages the ten-week fraud-platform project for reproducible local
 
 ## Verification boundary
 
-Local lint, unit tests, Compose validation, streaming verifier, 1m-row lakehouse reconciliation, and a clean-checkout smoke run are recorded as release checks. GitHub Actions is configured but a hosted run is not claimed without a remote. Power BI Cloud publishing remains unverified; the curated snapshot and local BI validation are not a cloud report. The Kafka rules worker does not invoke the hybrid API on each event. Offered replay EPS is not sustained throughput, and measured processing delay stops at Spark batch start, not a fraud decision.
+Local lint, unit tests, Compose validation, streaming verifier, 1m-row lakehouse reconciliation, and a [clean-checkout smoke run](../reports/week10/clean-checkout.json) are recorded as release checks. GitHub Actions is configured but a hosted run is not claimed without a remote. Power BI Cloud publishing remains unverified; the curated snapshot and local BI validation are not a cloud report. The Kafka rules worker does not invoke the hybrid API on each event. Offered replay EPS is not sustained throughput, and measured processing delay stops at Spark batch start, not a fraud decision.
 
 The source archive is made from the `v1.0.0` Git tag after the clean-checkout smoke test; ignored datasets, checkpoints, `.env`, local model stores, and Docker volumes are excluded. To inspect the measured scope and caveats, read the [performance report](../reports/week10/performance.md).

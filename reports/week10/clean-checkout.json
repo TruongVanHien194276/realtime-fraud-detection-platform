@@ -1,0 +1,18 @@
+{
+  "date": "2026-10-16",
+  "source_commit": "b5bca73",
+  "method": "git clone of the committed local repository into a new temporary directory; no ignored data or model files copied",
+  "environment": "Apple M3, 8 GiB host RAM, Docker Desktop",
+  "checks": {
+    "docker_compose_config": "PASS",
+    "docker_build_dev_spark": "PASS",
+    "synthetic_fixture_rows": 1000,
+    "bronze_rows": 1000,
+    "silver_valid_rows": 1000,
+    "silver_quarantine_rows": 0,
+    "duplicate_bronze_ids": 0,
+    "valid_quarantine_overlap": 0,
+    "reconciliation": "PASS"
+  },
+  "scope": "README synthetic-data quickstart; this is not the full PaySim benchmark, streaming demo, or hosted CI run"
+}
