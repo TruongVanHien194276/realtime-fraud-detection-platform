@@ -7,7 +7,7 @@ SILVER_FLAGS ?=
 SPARK_SUBMIT = docker compose run --rm spark spark-submit --master 'local[2]' --driver-memory 1g --jars /opt/iceberg/iceberg-spark-runtime.jar
 SPARK_SUBMIT_JDBC = docker compose run --rm spark spark-submit --master 'local[2]' --driver-memory 1g --jars /opt/iceberg/iceberg-spark-runtime.jar,/opt/jdbc/postgresql.jar
 
-.PHONY: build shell profile samples smoke-samples lint format format-check test check spark-build bronze-100k bronze-1m silver verify-lakehouse check-spark warehouse-up warehouse-export-100k warehouse-merge warehouse-indexes dbt-build dbt-docs bi-build bi-export bi-preview
+.PHONY: build shell profile samples smoke-samples lint format format-check test check check-api spark-build bronze-100k bronze-1m silver verify-lakehouse check-spark warehouse-up warehouse-export-100k warehouse-merge warehouse-indexes dbt-build dbt-docs bi-build bi-export bi-preview
 
 build:
 	docker compose build dev
@@ -34,9 +34,12 @@ format-check:
 	docker compose run --rm dev ruff format --check .
 
 test:
-	docker compose run --rm dev pytest -p no:cacheprovider tests/unit
+	docker compose run --rm dev pytest -p no:cacheprovider tests/unit --ignore=tests/unit/test_week8_api.py --ignore=tests/unit/test_week10_api_timeout.py
 
 check: lint format-check test
+
+check-api:
+	docker compose --profile api run --rm api pytest -p no:cacheprovider -q tests/unit/test_week8_api.py tests/unit/test_week10_api_timeout.py
 
 spark-build:
 	docker compose build spark

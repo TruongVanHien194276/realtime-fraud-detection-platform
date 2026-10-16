@@ -33,6 +33,17 @@ Sparse, read-only Spark backlog observations used broker partition-0 high waterm
 - PostgreSQL was stopped after Gold held 100,000 unique IDs. The incoming quality gate exited non-zero and persisted `WAREHOUSE_UNAVAILABLE`. After restart it passed and Gold remained 100,000 unique IDs. [Before](pg-before-quality.json), [paused](pg-paused-quality.json), [recovered](pg-recovered-quality.json).
 - Hybrid API slow-inference timeout and saturation are covered by `tests/unit/test_week10_api_timeout.py`; the local thread bound is not process isolation.
 
+| Injected case | Observed result | Evidence |
+|---|---|---|
+| 2% intentional duplicate sends, then ten duplicate source rows after restart | 999 Silver IDs remain unique; restart batch added zero fresh rows | [Stream verifier](stream-failure.json) |
+| Withheld first event sent after the watermark advanced | `LATE_EVENT` in DLQ with source trace; absent from Silver | [Stream verifier](stream-failure.json) |
+| Unsupported schema and malformed JSON | `UNSUPPORTED_SCHEMA_VERSION` and `MALFORMED_JSON` in DLQ | [Stream verifier](stream-failure.json) |
+| Spark restarted using the same warehouse, checkpoint and stream ID | Nine completed batches, 999 distinct Silver IDs | [Stream verifier](stream-failure.json) |
+| Project PostgreSQL container paused | Gate failed with `WAREHOUSE_UNAVAILABLE`; after recovery Gold still had 100,000 unique IDs | [Before](pg-before-quality.json), [paused](pg-paused-quality.json), [recovered](pg-recovered-quality.json) |
+| Model inference exceeded 10 ms test deadline or its only worker slot was occupied | HTTP 200 with `degraded=true`, `MODEL_INFERENCE_TIMEOUT`, rule-only decision | [API timeout tests](../../tests/unit/test_week10_api_timeout.py) |
+
+The timeout test is separate from the API benchmark. The seven degraded benchmark responses in run 2 had no captured reason code; their cause is unknown. A timed-out Python thread is bounded to one slot but is not forcibly stopped.
+
 ## API sequential loopback benchmark
 
 The rebuilt API reported `model_loaded=true`, `fraud-risk-safe` alias `champion` version `2` before measurement ([model info](api-model-info.json)). Each run used 10 unique-ID warmup requests and 200 measured requests, one Uvicorn worker, local loopback, Redis available, no concurrent clients. Each request ID differed to avoid scoring-cache hits. Percentiles cover successful HTTP requests, including any degraded rule-only responses.

@@ -192,7 +192,7 @@ Python, Pandas hoặc DuckDB cho profiling nhẹ, PyArrow, pytest, Docker.
 
 - `docs/business-requirements.md`
 - `docs/data-contracts.md`
-- `docs/architecture-v1.md`
+- `docs/architecture-final.md` (bản v1 dự kiến đã được gộp và đối chiếu với hiện trạng)
 - `data/manifest.json`
 - `scripts/create_samples.py`
 - Báo cáo EDA ngắn trong `docs/data-profile.md`
@@ -599,8 +599,7 @@ Docker Compose, pytest, benchmark scripts, GitHub Actions, diagram tool.
 - Architecture diagram cuối.
 - Demo video/GIF và screenshots.
 - README hoàn chỉnh.
-- `docs/interview-guide.md`
-- `docs/cv-bullets.md`
+- `docs/portfolio-guide.md` (demo phỏng vấn và CV bullets đã gộp)
 - GitHub release hoặc local release bundle.
 
 ### Definition of done
